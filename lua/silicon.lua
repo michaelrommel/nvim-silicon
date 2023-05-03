@@ -4,7 +4,7 @@ M.default_opts = {
 	font = "VictorMono-NF=34;Noto Emoji=34;",
 	theme = "gruvbox-dark",
 	background = "#076678",
-	background_image = "",
+	background_image = nil,
 	pad_horiz = 100,
 	pad_vert = 80,
 	no_round_corner = false,
@@ -15,12 +15,10 @@ M.default_opts = {
 	tab_width = 4,
 	gobble = true,
 	highlight_lines = true,
-	shadow = {
-		blur_radius = 16,
-		offset_x = 8,
-		offset_y = 8,
-		color = "#100808"
-	},
+	shadow_blur_radius = 16,
+	shadow_offset_x = 8,
+	shadow_offset_y = 8,
+	shadow_color = "#100808",
 	output = function()
 		return "./" .. os.date("!%Y-%m-%dT%H:%M:%S") .. "_screenshot.png"
 	end,
@@ -29,8 +27,13 @@ M.default_opts = {
 
 M.start = function()
 	print("Silicon started")
-	for 
-	
+	local args = ""
+	for k, v in pairs(M.opts) do
+		if k ~= "command" then
+			args = args .. " --" .. string.gsub(k, "_", "-")
+		end
+	end
+	print(M.opts.command .. args)
 end
 
 M.setup = function(opts)
