@@ -12,7 +12,10 @@ M.setup = function(opts)
 	vim.api.nvim_create_user_command("Silicon", function(_)
 		M.start()
 	end, {
-		foo = true
+		bang = true,
+		desc = "require('silicon').start()",
+		nargs = 0,
+		bar = true,
 	})
 end
 
