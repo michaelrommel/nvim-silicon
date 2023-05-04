@@ -6,7 +6,7 @@ This differs from `silicon.nvim` as that plugin uses a rust binding to call dire
 
 ## Features
 
-Right now, the plugin supports most options, that the original `silicon` tool offers, except clipboard support, as that was too flaky for me to get it working cross platform and inside a WSL2 installation.The advanced and nice features that @krivahtoo implemented, like window title and watermarking are missing.
+Right now, the plugin supports most options, that the original `silicon` tool offers, except clipboard support, as that was too flaky for me to get it working cross platform and inside a WSL2 installation. The advanced and nice features that @krivahtoo implemented, like window title and watermarking are missing.
 
 This implementation supports selected line ranges and also highlighting of a line and also removing superfluous indents.
 
@@ -16,7 +16,7 @@ Example code image:
 
 ### Ranges
 
-If a range is visually selected it does not matter, whether it is block, line or normally selected. The range is then taken as complete lines, where the selection starts up to the line, where the selection ends.
+If a range is visually selected it does not matter, whether it is block, line or normally selected. The range is then taken as complete lines: from the line in which the selection starts up to the line in which the selection ends.
 If no selection is made, the whole file is taken as input. If you only want to select a single line, then you would have to manually select it with `Shift-V`.
 
 ### Highlighting
