@@ -24,15 +24,16 @@ M.default_opts = {
 	output = function()
 		return "./" .. os.date("!%Y-%m-%dT%H-%M-%S") .. "_code.png"
 	end,
-	command = "silicon"
+	command = "silicon",
+	gobble = true,
 }
 
 M.start = function(args)
-	print("Silicon started")
 	local cmdline = {}
+	local filename = nil
 	table.insert(cmdline, M.opts.command)
 	for k, v in pairs(M.opts) do
-		if k == "command" then
+		if k == "command" or k == "gobble" then
 			-- no-op
 		elseif k == "language" then
 			table.insert(cmdline, '--language')
@@ -44,18 +45,16 @@ M.start = function(args)
 		elseif k == "output" then
 			table.insert(cmdline, '--output')
 			if type(v) == "function" then
-				table.insert(cmdline, v())
+				filename = v()
 			else
-				table.insert(cmdline, v)
+				filename = v
 			end
+			table.insert(cmdline, filename)
 		else
 			if type(v) == "boolean" then
 				if v then
 					table.insert(cmdline, "--" .. string.gsub(k, "_", "-"))
 				end
-			elseif type(v) == "number" then
-				table.insert(cmdline, "--" .. string.gsub(k, "_", "-"))
-				table.insert(cmdline, v)
 			elseif type(v) == "nil" then
 				-- no-op
 			else
@@ -64,18 +63,39 @@ M.start = function(args)
 			end
 		end
 	end
+	-- print(require("utils").dump(args))
+
+	local start = args.line1 - 1
+	local fin = args.line2
+
+	if args.range == 0 then
+		start = 0
+		fin = -1
+	end
+
 	local marks = vim.api.nvim_buf_get_mark(vim.api.nvim_win_get_buf(0), "h")[1]
 	if marks > 0 then
 		local hl
-		if args.line1 and marks >= (args.line1 - 1) and marks <= args.line2 then
-			hl = marks - (args.line1 - 1)
+		if args.range == 0 or (args.line1 and marks >= start and marks <= fin) then
+			hl = marks - start
 			table.insert(cmdline, "--highlight-lines")
 			table.insert(cmdline, hl)
 		end
 	end
-	local lines = vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(0), args.line1 - 1, args.line2, false)
+
+	local lines = vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(0), start, fin, false)
+
+	if M.opts.gobble then
+		lines = require("utils").gobble(lines)
+	end
+	-- print(require("utils").dump(lines))
+
 	local ret = vim.fn.system(cmdline, lines)
-	print(ret)
+	if ret ~= "" then
+		print("silicon returned with: " .. ret)
+	else
+		print("silicon generated image: " .. vim.fn.getcwd() .. "/" .. filename)
+	end
 end
 
 M.setup = function(opts)
