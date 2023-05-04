@@ -12,7 +12,7 @@ This implementation supports selected line ranges and also highlighting of a lin
 
 Example code image:
 
-![Example code image](https://github.com/michaelrommel/nvim-silicon/)
+![Example code image](https://raw.githubusercontent.com/michaelrommel/nvim-silicon/main/assets/2023-05-04T15-15-04_code.png)
 
 ### Ranges
 
