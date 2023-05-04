@@ -6,7 +6,7 @@ M.gobble = function(lines)
 	for _, v in pairs(lines) do
 		_, _, whitespace = string.find(v, "^(%s*)")
 		if type(whitespace) ~= "nil" then
-			if shortest_whitespace == nil or #whitespace < #shortest_whitespace then
+			if shortest_whitespace == nil or (#whitespace < #shortest_whitespace and v ~= "") then
 				shortest_whitespace = whitespace
 			end
 		end
