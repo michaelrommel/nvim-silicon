@@ -26,6 +26,7 @@ M.default_opts = {
 	end,
 	command = "silicon",
 	gobble = true,
+	to_clipboard = false,
 }
 
 M.start = function(args)
@@ -94,7 +95,11 @@ M.start = function(args)
 	if ret ~= "" then
 		print("silicon returned with: " .. ret)
 	else
-		print("silicon generated image: " .. vim.fn.getcwd() .. "/" .. filename)
+		if M.opts.to_clipboard then
+			print("silicon generated image was put on the clipboard")
+		else
+			print("silicon generated image: " .. vim.fn.getcwd() .. "/" .. filename)
+		end
 	end
 end
 
