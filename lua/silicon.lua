@@ -93,12 +93,24 @@ M.start = function(args)
 
 	local ret = vim.fn.system(cmdline, lines)
 	if ret ~= "" then
-		print("silicon returned with: " .. ret)
+		return vim.notify(
+			"silicon returned with: " .. ret,
+			vim.log.levels.WARN,
+			{ title = "nvim-silicon" }
+		)
 	else
 		if M.opts.to_clipboard then
-			print("silicon generated image was put on the clipboard")
+			return vim.notify(
+				"silicon generated image was put on the clipboard",
+				vim.log.levels.INFO,
+				{ title = "nvim-silicon" }
+			)
 		else
-			print("silicon generated image: " .. vim.fn.getcwd() .. "/" .. filename)
+			return vim.notify(
+				"silicon generated image: " .. vim.fn.getcwd() .. "/" .. filename,
+				vim.log.levels.INFO,
+				{ title = "nvim-silicon" }
+			)
 		end
 	end
 end
