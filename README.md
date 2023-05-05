@@ -6,9 +6,9 @@ This differs from `silicon.nvim` as that plugin uses a rust binding to call dire
 
 ## Features
 
-Right now, the plugin supports most options, that the original `silicon` tool offers, except clipboard support, as that was too flaky for me to get it working cross platform and inside a WSL2 installation. The advanced and nice features that @krivahtoo implemented, like window title and watermarking are missing.
+Right now, the plugin supports most options, that the original `silicon` tool offers. The advanced and nice features that @krivahtoo implemented, like window title and watermarking are missing. Clipboard support, might not work cross platform, e.g. inside a WSL2 installation, because from there you do not have access to the system clipboard and there may not be an X server running.
 
-This implementation supports selected line ranges and also highlighting of a line and also removing superfluous indents.
+This implementation supports selected line ranges, also highlighting of a line and removing superfluous indents.
 
 Example code image:
 
