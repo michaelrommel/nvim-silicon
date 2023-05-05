@@ -21,12 +21,12 @@ M.default_opts = {
 	shadow_offset_x = 8,
 	shadow_offset_y = 8,
 	shadow_color = "#100808",
+	gobble = true,
 	output = function()
 		return "./" .. os.date("!%Y-%m-%dT%H-%M-%S") .. "_code.png"
 	end,
-	command = "silicon",
-	gobble = true,
 	to_clipboard = false,
+	command = "silicon",
 }
 
 M.start = function(args)
