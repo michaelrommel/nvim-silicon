@@ -90,5 +90,10 @@ The `setup` function accepts the following table:
 	to_clipboard = false,
 	-- the silicon command, put an absolute location here, if the command is not in your PATH
 	command = "silicon",
+	-- a string or function returning a string that defines the title showing in the image
+	-- only works in silicon versions greater than v0.5.1
+	window_title = function()
+		return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()), ":t")
+	end,
 }
 ```
