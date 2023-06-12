@@ -32,6 +32,7 @@ M.default_opts = {
 M.start = function(args)
 	local cmdline = {}
 	local filename = nil
+	local value = nil
 	table.insert(cmdline, M.opts.command)
 	for k, v in pairs(M.opts) do
 		if k == "command" or k == "gobble" then
@@ -44,6 +45,7 @@ M.start = function(args)
 				value = v
 			end
 			table.insert(cmdline, value)
+			if k == "output" then filename = value end
 		else
 			if type(v) == "boolean" then
 				if v then
