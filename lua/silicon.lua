@@ -32,25 +32,20 @@ M.default_opts = {
 M.start = function(args)
 	local cmdline = {}
 	local filename = nil
+	local value = nil
 	table.insert(cmdline, M.opts.command)
 	for k, v in pairs(M.opts) do
 		if k == "command" or k == "gobble" then
 			-- no-op
-		elseif k == "language" then
-			table.insert(cmdline, '--language')
+		elseif k == "language" or k == "output" or k == "window_title" then
+			table.insert(cmdline, "--" .. string.gsub(k, "_", "-"))
 			if type(v) == "function" then
-				table.insert(cmdline, v())
+				value = v()
 			else
-				table.insert(cmdline, v)
+				value = v
 			end
-		elseif k == "output" then
-			table.insert(cmdline, '--output')
-			if type(v) == "function" then
-				filename = v()
-			else
-				filename = v
-			end
-			table.insert(cmdline, filename)
+			table.insert(cmdline, value)
+			if k == "output" then filename = value end
 		else
 			if type(v) == "boolean" then
 				if v then
