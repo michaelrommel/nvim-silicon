@@ -1,7 +1,7 @@
 local M = {}
 
 M.default_opts = {
-	font = "VictorMono Nerd Font=34;Noto Emoji",
+	font = "VictorMono NF=34;Noto Emoji",
 	theme = "gruvbox-dark",
 	background = "#076678",
 	background_image = nil,
