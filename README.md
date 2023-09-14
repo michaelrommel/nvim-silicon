@@ -62,8 +62,11 @@ The `setup` function accepts the following table:
 	no_window_controls = false,
 	-- whether to turn off the line numbers
 	no_line_number = false,
-	-- with which number the line numbering shall start
-	line_offset = 1,
+	-- with which number the line numbering shall start, the default is 1, but here a
+	-- function is used to return the actual source code line number
+	line_offset = function(args)
+		return args.line1
+	end,
 	-- the distance between lines of code
 	line_pad = 0,
 	-- the rendering of tab characters as so many space characters

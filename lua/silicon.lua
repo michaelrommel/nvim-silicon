@@ -37,10 +37,11 @@ M.start = function(args)
 	for k, v in pairs(M.opts) do
 		if k == "command" or k == "gobble" then
 			-- no-op
-		elseif k == "language" or k == "output" or k == "window_title" then
+		elseif k == "language" or k == "output"
+			or k == "window_title" or k == "line_offset" then
 			table.insert(cmdline, "--" .. string.gsub(k, "_", "-"))
 			if type(v) == "function" then
-				value = v()
+				value = v(args)
 			else
 				value = v
 			end
