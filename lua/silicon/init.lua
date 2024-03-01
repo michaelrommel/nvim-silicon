@@ -60,7 +60,7 @@ M.start = function(args)
 			end
 		end
 	end
-	-- print(require("utils").dump(args))
+	-- print(require("silicon.utils").dump(args))
 
 	local start = args.line1 - 1
 	local fin = args.line2
@@ -83,9 +83,9 @@ M.start = function(args)
 	local lines = vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(0), start, fin, false)
 
 	if M.opts.gobble then
-		lines = require("utils").gobble(lines)
+		lines = require("silicon.utils").gobble(lines)
 	end
-	-- print(require("utils").dump(lines))
+	-- print(require("silicon.utils").dump(lines))
 
 	local ret = vim.fn.system(cmdline, lines)
 	if ret ~= "" then
