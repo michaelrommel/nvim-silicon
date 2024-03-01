@@ -58,8 +58,8 @@ The `setup` function accepts the following table:
 	font = "VictorMono NF=34;Noto Emoji",
 	-- the theme to use, depends on themes available to silicon
 	theme = "gruvbox-dark",
-	-- the background color outside the rendered os window
-	background = "#076678",
+	-- the background color outside the rendered os window (in hexcode string e.g "#076678")
+	background = nil,
 	-- a path to a background image
 	background_image = nil,
 	-- the paddings to either side
