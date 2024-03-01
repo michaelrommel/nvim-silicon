@@ -3,7 +3,7 @@ local M = {}
 M.default_opts = {
 	font = "VictorMono NF=34;Noto Emoji",
 	theme = "gruvbox-dark",
-	background = "#076678",
+	background = nil,
 	background_image = nil,
 	pad_horiz = 100,
 	pad_vert = 80,
