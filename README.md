@@ -4,9 +4,7 @@ Plugin to create code images using the external `silicon` tool.
 
 This differs from `silicon.nvim` as that plugin uses a rust binding to call directly into the silicon rust library.
 
-The plugin has been mentioned in a recent YouTube video by "Dreams of Code", titled "Create beautiful code screenshots in Neovim. Without damaging your wrists." Thank you, Dreams of Code, for the nice words!
-
-![Youtube Video](https://youtu.be/ig_HLrssAYE?si=R2OXs7EgcLZ8dj6r)
+The plugin has been mentioned in a recent YouTube video by "Dreams of Code", titled ["Create beautiful code screenshots in Neovim. Without damaging your wrists."](https://youtu.be/ig_HLrssAYE?si=R2OXs7EgcLZ8dj6r) Thank you, Dreams of Code, for the nice words!
 
 ## Features
 
