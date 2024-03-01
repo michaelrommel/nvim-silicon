@@ -4,6 +4,10 @@ Plugin to create code images using the external `silicon` tool.
 
 This differs from `silicon.nvim` as that plugin uses a rust binding to call directly into the silicon rust library.
 
+The plugin has been mentioned in a recent YouTube video by "Dreams of Code", titled "Create beautiful code screenshots in Neovim. Without damaging your wrists." Thank you, Dreams of Code, for the nice words!
+
+![Youtube Video](https://youtu.be/ig_HLrssAYE?si=R2OXs7EgcLZ8dj6r)
+
 ## Features
 
 Right now, the plugin supports most options, that the original `silicon` tool offers. The advanced and nice features that @krivahtoo implemented, like window title and watermarking are missing. Clipboard support, might not work cross platform, e.g. inside a WSL2 installation, because from there you do not have access to the system clipboard and there may not be an X server running.
@@ -12,7 +16,7 @@ This implementation supports selected line ranges, also highlighting of a line a
 
 Example code image:
 
-![Example code image](https://raw.githubusercontent.com/michaelrommel/nvim-silicon/main/assets/2024-03-01T16-38-48_code.png)
+![Example code image](https://raw.githubusercontent.com/michaelrommel/nvim-silicon/main/assets/2024-03-01T20-33-20_code.png)
 
 ### Ranges
 
@@ -22,6 +26,10 @@ If no selection is made, the whole file is taken as input. If you only want to s
 ### Highlighting
 
 You can mark a single line as to be highlighted using the standard vim `mark` command with the mark `h`, the default key combination would be `mh`.
+
+### Colours and background image
+
+You can define either your own solid background colour or provide the path to a background image, setting both is not supported by `silicon` itself. The default colour setting for the shadow colour has also now been removed to let you consistently decide, which colour you want on both accounts.
 
 ### Gobbling and padding
 

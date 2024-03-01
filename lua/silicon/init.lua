@@ -20,7 +20,7 @@ M.default_opts = {
 	shadow_blur_radius = 16,
 	shadow_offset_x = 8,
 	shadow_offset_y = 8,
-	shadow_color = "#100808",
+	shadow_color = nil,
 	gobble = true,
 	output = function()
 		return "./" .. os.date("!%Y-%m-%dT%H-%M-%S") .. "_code.png"

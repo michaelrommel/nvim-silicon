@@ -37,7 +37,8 @@ M.dump = function(t)
 		["nil"] = function() return "nil" end,
 		["number"] = function(n) return tostring(n) end,
 		["string"] = function(s) return '"' .. s .. '"' end,
-		["boolean"] = function(b) return tostring(b) end
+		["boolean"] = function(b) return tostring(b) end,
+		["function"] = function(_) return "function()" end,
 	}
 	if type(t) == "table" then
 		local s = "{"
