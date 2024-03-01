@@ -23,6 +23,15 @@ If no selection is made, the whole file is taken as input. If you only want to s
 
 You can mark a single line as to be highlighted using the standard vim `mark` command with the mark `h`, the default key combination would be `mh`.
 
+### Gobbling and padding
+
+With the `gobble` parameter set to true, the longest common set of leading whitespace in each line is removed, making it easy to share screenshots of code fragments deep down in a nested structure. However, after removing all that whitespace, you now have the opion to insert arbitrary characters between the line number rendered by `silicon` and the code fragment. Since you can use any string, you can - apart from padding blanks - also insert vertical bars etc.
+
+```lua
+    num_separator = "\u{258f} ",
+```
+
+
 ## Setup
 
 With the `lazy.nvim` package manager:
@@ -46,7 +55,7 @@ The `setup` function accepts the following table:
 ```lua
 {
 	-- the font settings with size and fallback font
-	font = "VictorMono Nerd Font=34;Noto Emoji",
+	font = "VictorMono NF=34;Noto Emoji",
 	-- the theme to use, depends on themes available to silicon
 	theme = "gruvbox-dark",
 	-- the background color outside the rendered os window
@@ -85,6 +94,9 @@ The `setup` function accepts the following table:
 	shadow_color = "#100808",
 	-- whether to strip of superfluous leading whitespace
 	gobble = true,
+	-- a string to pad each line with after gobbling removed larger indents,
+	-- the default is nil, but here a bar glyph is used to draw a vertial line and some space
+	num_separator = "\u{258f} ",
 	-- a string or function that defines the path to the output image
 	output = function()
 		return "./" .. os.date("!%Y-%m-%dT%H-%M-%S") .. "_code.png"

@@ -23,6 +23,15 @@ M.gobble = function(lines)
 	end
 end
 
+M.separate = function(lines, num_separator)
+	local newlines = {}
+	for _, v in pairs(lines) do
+		local newline = string.gsub(v, "^", num_separator, 1)
+		table.insert(newlines, newline)
+	end
+	return newlines
+end
+
 M.dump = function(t)
 	local conv = {
 		["nil"] = function() return "nil" end,

@@ -27,6 +27,7 @@ M.default_opts = {
 	end,
 	to_clipboard = false,
 	command = "silicon",
+	num_separator = nil,
 }
 
 M.start = function(args)
@@ -35,8 +36,8 @@ M.start = function(args)
 	local value = nil
 	table.insert(cmdline, M.opts.command)
 	for k, v in pairs(M.opts) do
-		if k == "command" or k == "gobble" then
-			-- no-op
+		if k == "command" or k == "gobble" or k == "num_separator" then
+			-- no-op, since those are not silicon arguments
 		elseif k == "language" or k == "output"
 			or k == "window_title" or k == "line_offset" then
 			table.insert(cmdline, "--" .. string.gsub(k, "_", "-"))
@@ -87,6 +88,11 @@ M.start = function(args)
 	end
 	-- print(require("silicon.utils").dump(lines))
 
+	if M.opts.num_separator then
+		lines = require("silicon.utils").separate(lines, M.opts.num_separator)
+	end
+
+	-- print(require("silicon.utils").dump(cmdline))
 	local ret = vim.fn.system(cmdline, lines)
 	if ret ~= "" then
 		return vim.notify(
