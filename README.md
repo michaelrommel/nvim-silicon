@@ -96,8 +96,8 @@ The `setup` function accepts the following table:
 	-- the offset of the shadow in x and y directions
 	shadow_offset_x = 8,
 	shadow_offset_y = 8,
-	-- the color of the shadow
-	shadow_color = "#100808",
+	-- the color of the shadow (in hexcode string e.g "#100808")
+	shadow_color = nil,
 	-- whether to strip of superfluous leading whitespace
 	gobble = true,
 	-- a string to pad each line with after gobbling removed larger indents,
@@ -112,7 +112,7 @@ The `setup` function accepts the following table:
 	-- the silicon command, put an absolute location here, if the command is not in your PATH
 	command = "silicon",
 	-- a string or function returning a string that defines the title showing in the image
-	-- only works in silicon versions greater than v0.5.1
+	-- only works in silicon versions greater than v0.5.1, the default is nil
 	window_title = function()
 		return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()), ":t")
 	end,
