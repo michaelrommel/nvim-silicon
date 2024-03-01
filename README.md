@@ -8,11 +8,11 @@ This differs from `silicon.nvim` as that plugin uses a rust binding to call dire
 
 Right now, the plugin supports most options, that the original `silicon` tool offers. The advanced and nice features that @krivahtoo implemented, like window title and watermarking are missing. Clipboard support, might not work cross platform, e.g. inside a WSL2 installation, because from there you do not have access to the system clipboard and there may not be an X server running.
 
-This implementation supports selected line ranges, also highlighting of a line and removing superfluous indents.
+This implementation supports selected line ranges, also highlighting of a line and removing superfluous indents and adding consisten padding or a separator between the numbers and the code.
 
 Example code image:
 
-![Example code image](https://raw.githubusercontent.com/michaelrommel/nvim-silicon/main/assets/2023-05-04T15-15-04_code.png)
+![Example code image](https://raw.githubusercontent.com/michaelrommel/nvim-silicon/main/assets/2024-03-01T16-38-48_code.png)
 
 ### Ranges
 
