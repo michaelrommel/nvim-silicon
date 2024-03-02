@@ -107,16 +107,16 @@ The `setup` function accepts the following table (shown with the builtin default
 
 ```lua
 {
-    -- disable_defaults will disable all builtin default settings apart
-    -- from the base arguments, that are needed to call silicon at all, see
-    -- mandatory_options below, also those options can be overridden
-    -- all of the settings could be overridden in the lua setup call,
-    -- but this clashes with the use of an external silicon --config=file,
-    -- see issue #9
-    disable_defaults = false,
-    -- turn on debug messages
-    debug = false,
-    -- most of them could be overridden with other 
+	-- disable_defaults will disable all builtin default settings apart
+	-- from the base arguments, that are needed to call silicon at all, see
+	-- mandatory_options below, also those options can be overridden
+	-- all of the settings could be overridden in the lua setup call,
+	-- but this clashes with the use of an external silicon --config=file,
+	-- see issue #9
+	disable_defaults = false,
+	-- turn on debug messages
+	debug = false,
+	-- most of them could be overridden with other 
 	-- the font settings with size and fallback font
 	font = "VictorMono NF=34;Noto Emoji",
 	-- the theme to use, depends on themes available to silicon
@@ -165,7 +165,7 @@ The `setup` function accepts the following table (shown with the builtin default
 	-- whether to put the image onto the clipboard, may produce an error if run on WSL2
 	to_clipboard = false,
 	window_title = nil,
-    -- here a function is used to get the name of the current buffer
+	-- here a function is used to get the name of the current buffer
 	-- window_title = function()
 	-- 	return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()), ":t")
 	-- end,
