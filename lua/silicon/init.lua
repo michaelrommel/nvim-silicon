@@ -1,6 +1,6 @@
 local M = {}
 
--- options, whithout silicon cannot run
+-- options, without silicon cannot be run
 M.mandatory_options = {
 	command = 'silicon',
 }
@@ -216,9 +216,7 @@ M.start = function(args, options)
 				elseif string.sub(tostring(M.filename), 1, 1) == "~" then
 					location = M.filename
 				elseif string.sub(tostring(M.filename), 1, 2) == "./" then
-					location = vim.fn.getcwd()
-						.. "/"
-						.. string.sub(tostring(M.filename), 3)
+					location = vim.fn.getcwd() .. string.sub(tostring(M.filename), 2)
 				else
 					location = vim.fn.getcwd() .. "/" .. M.filename
 				end

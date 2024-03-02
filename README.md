@@ -16,6 +16,8 @@ Example code image:
 
 ![Example code image](https://raw.githubusercontent.com/michaelrommel/nvim-silicon/main/assets/2024-03-01T20-33-20_code.png)
 
+The typefact used in this example is called "Victor Mono" from Rune Bjørnerås. You can find it [here](https://rubjo.github.io/victor-mono/). Please consider using this typeface and sponsor Rune as well. Not visible in the screenshot, my go-to terminal emulator is [Wezterm](https://wezfurlong.org/wezterm/index.html). Please show him some love, too.
+
 ### Ranges
 
 If a range is visually selected it does not matter, whether it is block, line or normally selected. The range is then taken as complete lines: from the line in which the selection starts up to the line in which the selection ends.
