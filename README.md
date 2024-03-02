@@ -37,6 +37,53 @@ With the `gobble` parameter set to true, the longest common set of leading white
     num_separator = "\u{258f} ",
 ```
 
+### Language options
+
+The underlying `silicon` command uses the rust `syntect` create for syntax detection and highlighting along with some heuristics. This plugin used the `vim.bo.filetype` as `--language` argument but users reported that some filetypes are not recognized, e.g. fortran.
+
+Therefore - in order not to break existing configs - now the following methods are used:
+- if the users set the `language` option in their config, this is used verbatim
+- if none is set, first the argument `--language <filetype>` is used as before, but if the `silicon` execution errors out, then
+- the file's extension is used as `--language <extension>` argument in a second attempt
+
+This change hopefully does not break s.b. config but improves the chances of getting an image.
+
+### silicon's own config files
+
+`silicon` has the option of using an own config file, usually located at `${HOME}/.config/silicon/config`, but you can find out the location on your system with `silicon --config-file`. There common options can be defined, but the problem is, that command line arguments that `nvim=silicon` supplies and the same arguments in the config file lead to errors.
+
+Now in order to have both worlds, there is now a `disable_defaults` option. This will then only set the command argument. Nothing is added, so if a mandatory option like output destination selection or language is not given either in the config file or the options table, there likely is an error to be expected. So now you can split your arguments between the silicon config file and the neovim lua opts table, depending for instance on how you synchronize your configs across computersC. Note that still conflicting arguments in both locations, like `background` and `background_image` still have to be avoided.
+
+Examples:
+
+`~/.config/silicon/config`
+```text
+--output="./code.png"
+--language="javascript"
+--background="#00ff00"
+--pad-horiz=10
+--pad-vert=5
+```
+
+with
+
+`nvim-silicon.lua` 
+```lua
+-- create code images
+local opts = {
+	"michaelrommel/nvim-silicon",
+	dir = '/Users/rommel/Software/michael/nvim-silicon',
+	lazy = true,
+	cmd = "Silicon",
+	opts = {
+	}
+}
+return opts
+```
+
+will render any file with `javascript` syntax highlighting in a file named `./code.png`.
+
+
 
 ## Setup
 
@@ -56,10 +103,20 @@ With the `lazy.nvim` package manager:
 },
 ```
 
-The `setup` function accepts the following table:
+The `setup` function accepts the following table (shown with the builtin defaults):
 
 ```lua
 {
+    -- disable_defaults will disable all builtin default settings apart
+    -- from the base arguments, that are needed to call silicon at all, see
+    -- mandatory_options below, also those options can be overridden
+    -- all of the settings could be overridden in the lua setup call,
+    -- but this clashes with the use of an external silicon --config=file,
+    -- see issue #9
+    disable_defaults = false,
+    -- turn on debug messages
+    debug = false,
+    -- most of them could be overridden with other 
 	-- the font settings with size and fallback font
 	font = "VictorMono NF=34;Noto Emoji",
 	-- the theme to use, depends on themes available to silicon
@@ -77,11 +134,12 @@ The `setup` function accepts the following table:
 	no_window_controls = false,
 	-- whether to turn off the line numbers
 	no_line_number = false,
-	-- with which number the line numbering shall start, the default is 1, but here a
-	-- function is used to return the actual source code line number
-	line_offset = function(args)
-		return args.line1
-	end,
+	-- with which number the line numbering shall start
+	line_offset = 1,
+	-- here a function is used to return the actual source code line number
+	-- line_offset = function(args)
+	-- 	return args.line1
+	-- end,
 	-- the distance between lines of code
 	line_pad = 0,
 	-- the rendering of tab characters as so many space characters
@@ -101,20 +159,32 @@ The `setup` function accepts the following table:
 	-- whether to strip of superfluous leading whitespace
 	gobble = true,
 	-- a string to pad each line with after gobbling removed larger indents,
-	-- the default is nil, but here a bar glyph is used to draw a vertial line and some space
-	num_separator = "\u{258f} ",
+	num_separator = nil,
+	-- here a bar glyph is used to draw a vertial line and some space
+	-- num_separator = "\u{258f} ",
+	-- whether to put the image onto the clipboard, may produce an error if run on WSL2
+	to_clipboard = false,
+	window_title = nil,
+    -- here a function is used to get the name of the current buffer
+	-- window_title = function()
+	-- 	return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()), ":t")
+	-- end,
+	-- the silicon command, put an absolute location here, if the command is not in your PATH
+	command = "silicon",
+	-- a string or function returning a string that defines the title showing in the image
+	-- only works in silicon versions greater than v0.5.1
 	-- a string or function that defines the path to the output image
 	output = function()
 		return "./" .. os.date("!%Y-%m-%dT%H-%M-%S") .. "_code.png"
 	end,
-	-- whether to put the image onto the clipboard, may produce an error if run on WSL2
-	to_clipboard = false,
-	-- the silicon command, put an absolute location here, if the command is not in your PATH
-	command = "silicon",
-	-- a string or function returning a string that defines the title showing in the image
-	-- only works in silicon versions greater than v0.5.1, the default is nil
-	window_title = function()
-		return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()), ":t")
-	end,
+}
+```
+
+The mandatory options, that are used, even when the option `disable_defaults` is set to true are:
+
+```lua
+-- options, whithout silicon cannot run
+M.mandatory_options = {
+	command = 'silicon',
 }
 ```

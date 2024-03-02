@@ -1,6 +1,13 @@
 local M = {}
 
+-- options, whithout silicon cannot run
+M.mandatory_options = {
+	command = 'silicon',
+}
+
+-- default options if nothing is provided by the user
 M.default_opts = {
+	debug = false,
 	font = "VictorMono NF=34;Noto Emoji",
 	theme = "gruvbox-dark",
 	background = nil,
@@ -14,40 +21,66 @@ M.default_opts = {
 	line_pad = 0,
 	tab_width = 4,
 	highlight_lines = nil,
-	language = function()
-		return vim.bo.filetype
-	end,
+	language = nil,
 	shadow_blur_radius = 16,
 	shadow_offset_x = 8,
 	shadow_offset_y = 8,
 	shadow_color = nil,
 	gobble = true,
+	to_clipboard = false,
+	window_title = nil,
+	num_separator = nil,
+	command = "silicon",
 	output = function()
 		return "./" .. os.date("!%Y-%m-%dT%H-%M-%S") .. "_code.png"
 	end,
-	to_clipboard = false,
-	command = "silicon",
-	num_separator = nil,
 }
 
-M.start = function(args)
+M.parse_options = function(opts)
+	local options
+
+	vim.validate({
+		opts = { opts, "table" }
+	})
+
+	if opts and opts.disable_defaults then
+		options = vim.tbl_deep_extend(
+			"force",
+			M.mandatory_options,
+			opts or {}
+		)
+	else
+		options = vim.tbl_deep_extend(
+			"force",
+			M.default_opts,
+			opts or {}
+		)
+	end
+
+	return options
+end
+
+M.get_arguments = function(options)
 	local cmdline = {}
-	local filename = nil
 	local value = nil
-	table.insert(cmdline, M.opts.command)
-	for k, v in pairs(M.opts) do
-		if k == "command" or k == "gobble" or k == "num_separator" then
-			-- no-op, since those are not silicon arguments
-		elseif k == "language" or k == "output"
+	table.insert(cmdline, options.command)
+	for k, v in pairs(options) do
+		if k == "command" or k == "gobble"
+			or k == "num_separator" or k == "disable_defaults"
+			or k == "debug" or k == "language"
+		then
+			-- no-op, since those are not silicon arguments or we deal with
+			-- them dynamically later
+		elseif k == "output"
 			or k == "window_title" or k == "line_offset" then
 			table.insert(cmdline, "--" .. string.gsub(k, "_", "-"))
 			if type(v) == "function" then
-				value = v(args)
+				value = v()
 			else
 				value = v
 			end
 			table.insert(cmdline, value)
-			if k == "output" then filename = value end
+			if k == "output" then M.filename = value end
 		else
 			if type(v) == "boolean" then
 				if v then
@@ -61,8 +94,14 @@ M.start = function(args)
 			end
 		end
 	end
-	-- print(require("silicon.utils").dump(args))
 
+	if options.debug then
+		print(require("silicon.utils").dump(cmdline))
+	end
+	return cmdline
+end
+
+M.format_lines = function(cmdline, args, options)
 	local start = args.line1 - 1
 	local fin = args.line2
 
@@ -83,17 +122,79 @@ M.start = function(args)
 
 	local lines = vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(0), start, fin, false)
 
-	if M.opts.gobble then
+	if options.gobble then
 		lines = require("silicon.utils").gobble(lines)
 	end
-	-- print(require("silicon.utils").dump(lines))
-
-	if M.opts.num_separator then
-		lines = require("silicon.utils").separate(lines, M.opts.num_separator)
+	if options.num_separator then
+		lines = require("silicon.utils").separate(lines, options.num_separator)
 	end
 
-	-- print(require("silicon.utils").dump(cmdline))
-	local ret = vim.fn.system(cmdline, lines)
+	if options.debug then
+		print(require("silicon.utils").dump(lines))
+	end
+	return lines, cmdline
+end
+
+M.start = function(args, options)
+	local lines = nil
+	local cmdline = nil
+	-- build the commandline based on supplied options
+	local base_cmdline = M.get_arguments(options)
+	-- parse buffer into lines, based on arguments from neovim, reshapes cmdline
+	lines, base_cmdline = M.format_lines(base_cmdline, args, options)
+
+	local ret
+	-- if a language was supplied by the user, take that as argument directly
+	if options.language then
+		cmdline = vim.tbl_extend("error", base_cmdline, {})
+		table.insert(cmdline, '--language')
+		table.insert(cmdline, options.language)
+		if options.debug then
+			print(require("silicon.utils").dump(cmdline))
+		end
+		ret = vim.fn.system(cmdline, lines)
+		ret = string.gsub(ret, "\n", "")
+	else
+		if options.disable_defaults then
+			-- run silicon as is, no supplement of anything
+			if options.debug then
+				print(require("silicon.utils").dump(base_cmdline))
+			end
+			ret = vim.fn.system(base_cmdline, lines)
+			ret = string.gsub(ret, "\n", "")
+		else
+			-- try first the language parameter derived from the buffer's filetype
+			cmdline = vim.tbl_extend("error", base_cmdline, {})
+			table.insert(cmdline, '--language')
+			table.insert(cmdline, vim.bo.filetype)
+			if options.debug then
+				print(require("silicon.utils").dump(cmdline))
+			end
+			ret = vim.fn.system(cmdline, lines)
+			ret = string.gsub(ret, "\n", "")
+			if ret ~= "" then
+				vim.notify(
+					"silicon call with filetype error: " .. ret .. ", trying extension...",
+					vim.log.levels.WARN,
+					{ title = "nvim-silicon" }
+				)
+				-- seems to have gone wrong, new try with extension
+				cmdline = vim.tbl_extend("error", base_cmdline, {})
+				table.insert(cmdline, '--language')
+				table.insert(cmdline, vim.fn.fnamemodify(
+					vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()),
+					":e"
+				))
+				if options.debug then
+					print(require("silicon.utils").dump(cmdline))
+				end
+				ret = vim.fn.system(cmdline, lines)
+				ret = string.gsub(ret, "\n", "")
+			end
+		end
+	end
+
+	-- last, final attempt being evaluated
 	if ret ~= "" then
 		return vim.notify(
 			"silicon returned with: " .. ret,
@@ -101,15 +202,18 @@ M.start = function(args)
 			{ title = "nvim-silicon" }
 		)
 	else
-		if M.opts.to_clipboard then
+		if options.to_clipboard then
 			return vim.notify(
-				"silicon generated image was put on the clipboard",
+				"silicon put the image on the clipboard",
 				vim.log.levels.INFO,
 				{ title = "nvim-silicon" }
 			)
 		else
+			local filename = M.filename
+				and '"' .. vim.fn.getcwd() .. "/" .. M.filename .. '"'
+				or 'a the location specified in your config file'
 			return vim.notify(
-				"silicon generated image: " .. vim.fn.getcwd() .. "/" .. filename,
+				"silicon generated an image at " .. filename,
 				vim.log.levels.INFO,
 				{ title = "nvim-silicon" }
 			)
@@ -118,18 +222,12 @@ M.start = function(args)
 end
 
 M.setup = function(opts)
-	vim.validate({
-		opts = { opts, "table" }
-	})
+	-- populate the global options table
+	local options = M.parse_options(opts)
 
-	M.opts = vim.tbl_deep_extend(
-		"force",
-		M.default_opts,
-		opts or {}
-	)
-
+	-- define commands for neovim
 	vim.api.nvim_create_user_command("Silicon", function(args)
-		M.start(args)
+		M.start(args, options)
 	end, {
 		desc = "convert range to code image representation",
 		force = false,
