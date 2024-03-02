@@ -123,7 +123,8 @@ The `setup` function accepts the following table (shown with the builtin default
 	font = "VictorMono NF=34;Noto Emoji",
 	-- the theme to use, depends on themes available to silicon
 	theme = "gruvbox-dark",
-	-- the background color outside the rendered os window (in hexcode string e.g "#076678")
+	-- the background color outside the rendered os window
+    -- (in hexcode string e.g "#076678")
 	background = nil,
 	-- a path to a background image
 	background_image = nil,
@@ -132,7 +133,8 @@ The `setup` function accepts the following table (shown with the builtin default
 	pad_vert = 80,
 	-- whether to have the os window rendered with rounded corners
 	no_round_corner = false,
-	-- whether to put the close, minimize, maximise traffic light controls on the border
+	-- whether to put the close, minimize, maximise traffic light 
+    -- controls on the border
 	no_window_controls = false,
 	-- whether to turn off the line numbers
 	no_line_number = false,
@@ -146,8 +148,8 @@ The `setup` function accepts the following table (shown with the builtin default
 	line_pad = 0,
 	-- the rendering of tab characters as so many space characters
 	tab_width = 4,
-	-- with which language the syntax highlighting shall be done, should be a function
-	-- that returns either a language name or an extension like ".js"
+	-- with which language the syntax highlighting shall be done, should be
+    -- a function that returns either a language name or an extension like "js"
 	language = function()
 		return vim.bo.filetype
 	end,
@@ -164,17 +166,22 @@ The `setup` function accepts the following table (shown with the builtin default
 	num_separator = nil,
 	-- here a bar glyph is used to draw a vertial line and some space
 	-- num_separator = "\u{258f} ",
-	-- whether to put the image onto the clipboard, may produce an error if run on WSL2
+	-- whether to put the image onto the clipboard, may produce an error,
+    -- if run on WSL2
 	to_clipboard = false,
+	-- a string or function returning a string that defines the title
+    -- showing in the image, only works in silicon versions greater than v0.5.1
 	window_title = nil,
 	-- here a function is used to get the name of the current buffer
 	-- window_title = function()
-	-- 	return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()), ":t")
+	-- 	return vim.fn.fnamemodify(
+    -- 		vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()),
+    -- 		":t"
+    -- 		)
 	-- end,
-	-- the silicon command, put an absolute location here, if the command is not in your PATH
+	-- the silicon command, put an absolute location here, if the
+    -- command is not in your ${PATH}
 	command = "silicon",
-	-- a string or function returning a string that defines the title showing in the image
-	-- only works in silicon versions greater than v0.5.1
 	-- a string or function that defines the path to the output image
 	output = function()
 		return "./" .. os.date("!%Y-%m-%dT%H-%M-%S") .. "_code.png"
@@ -185,7 +192,8 @@ The `setup` function accepts the following table (shown with the builtin default
 The mandatory options, that are used, even when the option `disable_defaults` is set to true are:
 
 ```lua
--- without that silicon cannot run. But you can override the command option in your config
+-- without that silicon cannot run. But you can override the command
+-- option in your lua config
 M.mandatory_options = {
 	command = 'silicon',
 }
