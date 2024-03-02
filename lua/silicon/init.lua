@@ -209,14 +209,14 @@ M.start = function(args, options)
 				{ title = "nvim-silicon" }
 			)
 		else
-			local filename = M.filename
-				and '"' .. vim.fn.getcwd() .. "/" .. M.filename .. '"'
-				or 'a the location specified in your config file'
-			return vim.notify(
-				"silicon generated an image at " .. filename,
-				vim.log.levels.INFO,
-				{ title = "nvim-silicon" }
-			)
+			local genInfo = function()
+				if string.sub(tostring(M.filename), 1, 1) == "~" or string.sub(tostring(M.filename), 1, 1) == "." then
+					return "silicon generated image at: " .. M.filename
+				end
+				return "silicon generated image at: " .. vim.fn.getcwd() .. "/" .. M.filename
+			end
+
+			return vim.notify(genInfo(), vim.log.levels.INFO, { title = "nvim-silicon" })
 		end
 	end
 end
