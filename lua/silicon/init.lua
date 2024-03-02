@@ -210,9 +210,17 @@ M.start = function(args, options)
 			)
 		else
 			local genInfo = function()
-				if string.sub(tostring(M.filename), 1, 1) == "~" or string.sub(tostring(M.filename), 1, 1) == "." then
+				if string.sub(tostring(M.filename), 1, 1) == "~" then
 					return "silicon generated image at: " .. M.filename
 				end
+
+				if string.sub(tostring(M.filename), 1, 2) == "./" then
+					return "silicon generated image at: "
+						.. vim.fn.getcwd()
+						.. "/"
+						.. string.sub(tostring(M.filename), 3)
+				end
+
 				return "silicon generated image at: " .. vim.fn.getcwd() .. "/" .. M.filename
 			end
 
