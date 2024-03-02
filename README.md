@@ -183,7 +183,7 @@ The `setup` function accepts the following table (shown with the builtin default
 The mandatory options, that are used, even when the option `disable_defaults` is set to true are:
 
 ```lua
--- options, whithout silicon cannot run
+-- without that silicon cannot run. But you can override the command option in your config
 M.mandatory_options = {
 	command = 'silicon',
 }
