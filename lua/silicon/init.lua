@@ -210,20 +210,20 @@ M.start = function(args, options)
 			)
 		else
 			local genInfo = function()
-				if string.sub(tostring(M.filename), 1, 1) == "~" then
-					return "silicon generated image at: " .. M.filename
-				end
-
-				if string.sub(tostring(M.filename), 1, 2) == "./" then
-					return "silicon generated image at: "
-						.. vim.fn.getcwd()
+				local location = nil
+				if not M.filename then
+					location = "the location specified in your config file"
+				elseif string.sub(tostring(M.filename), 1, 1) == "~" then
+					location = M.filename
+				elseif string.sub(tostring(M.filename), 1, 2) == "./" then
+					location = vim.fn.getcwd()
 						.. "/"
 						.. string.sub(tostring(M.filename), 3)
+				else
+					location = vim.fn.getcwd() .. "/" .. M.filename
 				end
-
-				return "silicon generated image at: " .. vim.fn.getcwd() .. "/" .. M.filename
+				return "silicon generated an image at " .. location
 			end
-
 			return vim.notify(genInfo(), vim.log.levels.INFO, { title = "nvim-silicon" })
 		end
 	end
