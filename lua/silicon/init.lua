@@ -60,7 +60,7 @@ M.parse_options = function(opts)
 	return options
 end
 
-M.get_arguments = function(options)
+M.get_arguments = function(args, options)
 	local cmdline = {}
 	local value = nil
 	table.insert(cmdline, options.command)
@@ -75,7 +75,7 @@ M.get_arguments = function(options)
 			or k == "window_title" or k == "line_offset" then
 			table.insert(cmdline, "--" .. string.gsub(k, "_", "-"))
 			if type(v) == "function" then
-				value = v()
+				value = v(args)
 			else
 				value = v
 			end
@@ -102,25 +102,25 @@ M.get_arguments = function(options)
 end
 
 M.format_lines = function(cmdline, args, options)
-	local start = args.line1 - 1
-	local fin = args.line2
+	local begin_line = args.line1 - 1
+	local finish_line = args.line2
 
 	if args.range == 0 then
-		start = 0
-		fin = -1
+		begin_line = 0
+		finish_line = -1
 	end
 
 	local marks = vim.api.nvim_buf_get_mark(vim.api.nvim_win_get_buf(0), "h")[1]
 	if marks > 0 then
 		local hl
-		if args.range == 0 or (args.line1 and marks >= start and marks <= fin) then
-			hl = marks - start
+		if args.range == 0 or (args.line1 and marks >= begin_line and marks <= finish_line) then
+			hl = marks - begin_line
 			table.insert(cmdline, "--highlight-lines")
 			table.insert(cmdline, hl)
 		end
 	end
 
-	local lines = vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(0), start, fin, false)
+	local lines = vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(0), begin_line, finish_line, false)
 
 	if options.gobble then
 		lines = require("silicon.utils").gobble(lines)
@@ -139,7 +139,7 @@ M.start = function(args, options)
 	local lines = nil
 	local cmdline = nil
 	-- build the commandline based on supplied options
-	local base_cmdline = M.get_arguments(options)
+	local base_cmdline = M.get_arguments(args, options)
 	-- parse buffer into lines, based on arguments from neovim, reshapes cmdline
 	lines, base_cmdline = M.format_lines(base_cmdline, args, options)
 

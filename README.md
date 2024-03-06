@@ -16,7 +16,7 @@ Example code image:
 
 ![Example code image](https://raw.githubusercontent.com/michaelrommel/nvim-silicon/main/assets/2024-03-01T20-33-20_code.png)
 
-The typefact used in this example is called "Victor Mono" from Rune Bjørnerås. You can find it [here](https://rubjo.github.io/victor-mono/). Please consider using this typeface and sponsor Rune as well. Not visible in the screenshot, my go-to terminal emulator is [Wezterm](https://wezfurlong.org/wezterm/index.html). Please show him some love, too.
+The typeface used in this example is called "Victor Mono" from Rune Bjørnerås. You can find it [here](https://rubjo.github.io/victor-mono/). Please consider using this typeface and sponsor Rune as well. Not visible in the screenshot, my go-to terminal emulator is [Wezterm](https://wezfurlong.org/wezterm/index.html). Please show him some love, too.
 
 ### Ranges
 
@@ -74,7 +74,6 @@ with
 -- create code images
 local opts = {
 	"michaelrommel/nvim-silicon",
-	dir = '/Users/rommel/Software/michael/nvim-silicon',
 	lazy = true,
 	cmd = "Silicon",
 	opts = {
@@ -142,7 +141,7 @@ The `setup` function accepts the following table (shown with the builtin default
 	line_offset = 1,
 	-- here a function is used to return the actual source code line number
 	-- line_offset = function(args)
-	-- 	return args.line1
+	--     return args.line1
 	-- end,
 	-- the distance between lines of code
 	line_pad = 0,
@@ -174,10 +173,10 @@ The `setup` function accepts the following table (shown with the builtin default
 	window_title = nil,
 	-- here a function is used to get the name of the current buffer
 	-- window_title = function()
-	-- 	return vim.fn.fnamemodify(
-	-- 		vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()),
-	-- 		":t"
-	-- 		)
+	--     return vim.fn.fnamemodify(
+	--         vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()),
+	--         ":t"
+	--     )
 	-- end,
 	-- the silicon command, put an absolute location here, if the
 	-- command is not in your ${PATH}
