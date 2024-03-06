@@ -144,11 +144,18 @@ M.start = function(args, options)
 	lines, base_cmdline = M.format_lines(base_cmdline, args, options)
 
 	local ret
+	local value
 	-- if a language was supplied by the user, take that as argument directly
 	if options.language then
+		if type(options.language) == "function" then
+			value = options.language()
+		else
+			value = options.language
+		end
+
 		cmdline = vim.tbl_extend("error", base_cmdline, {})
 		table.insert(cmdline, '--language')
-		table.insert(cmdline, options.language)
+		table.insert(cmdline, value)
 		if options.debug then
 			print(require("silicon.utils").dump(cmdline))
 		end
