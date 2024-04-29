@@ -1,5 +1,7 @@
 local M = {}
 
+M.options = {}
+
 -- options, without silicon cannot be run
 M.mandatory_options = {
 	command = 'silicon',
@@ -135,17 +137,34 @@ M.format_lines = function(cmdline, args, options)
 	return lines, cmdline
 end
 
-M.shot = function()
-	local line1 = vim.fn.getpos("v")[2]
-	local line2 = vim.api.nvim_win_get_cursor(0)[1]
-	if line1 > line2 then
-		local linetmp = line1
-		line1 = line2
-		line2 = linetmp
-	end
+M.shoot = function()
+	local args = nil
 	local mode = vim.api.nvim_get_mode().mode
-	print("Mode is: " .. mode)
-	print("line1: " .. line1 .. ", line2: " .. line2)
+	if mode == "n" then
+		args = {
+			line1 = 0,
+			line2 = -1,
+			range = 0
+		}
+	elseif mode == "v" or mode == "V" or mode == "\22" then
+		local line1 = vim.fn.getpos("v")[2]
+		local line2 = vim.api.nvim_win_get_cursor(0)[1]
+		if line1 > line2 then
+			local linetmp = line1
+			line1 = line2
+			line2 = linetmp
+		end
+		args = {
+			line1 = line1,
+			line2 = line2,
+			range = 1
+		}
+	end
+	if M.options.debug then
+		print("mode is: " .. mode)
+		print("args: " .. require("nvim-silicon.utils").dump(args))
+	end
+	M.start(args, M.options)
 end
 
 M.start = function(args, options)
@@ -249,11 +268,11 @@ end
 
 M.setup = function(opts)
 	-- populate the global options table
-	local options = M.parse_options(opts)
+	M.options = M.parse_options(opts)
 
 	-- define commands for neovim
 	vim.api.nvim_create_user_command("Silicon", function(args)
-		M.start(args, options)
+		M.start(args, M.options)
 	end, {
 		desc = "convert range to code image representation",
 		force = false,
