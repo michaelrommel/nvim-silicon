@@ -96,7 +96,7 @@ M.get_arguments = function(args, options)
 	end
 
 	if options.debug then
-		print(require("silicon.utils").dump(cmdline))
+		print(require("nvim-silicon.utils").dump(cmdline))
 	end
 	return cmdline
 end
@@ -123,16 +123,29 @@ M.format_lines = function(cmdline, args, options)
 	local lines = vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(0), begin_line, finish_line, false)
 
 	if options.gobble then
-		lines = require("silicon.utils").gobble(lines)
+		lines = require("nvim-silicon.utils").gobble(lines)
 	end
 	if options.num_separator then
-		lines = require("silicon.utils").separate(lines, options.num_separator)
+		lines = require("nvim-silicon.utils").separate(lines, options.num_separator)
 	end
 
 	if options.debug then
-		print(require("silicon.utils").dump(lines))
+		print(require("nvim-silicon.utils").dump(lines))
 	end
 	return lines, cmdline
+end
+
+M.shot = function()
+	local line1 = vim.fn.getpos("v")[2]
+	local line2 = vim.api.nvim_win_get_cursor(0)[1]
+	if line1 > line2 then
+		local linetmp = line1
+		line1 = line2
+		line2 = linetmp
+	end
+	local mode = vim.api.nvim_get_mode().mode
+	print("Mode is: " .. mode)
+	print("line1: " .. line1 .. ", line2: " .. line2)
 end
 
 M.start = function(args, options)
@@ -157,7 +170,7 @@ M.start = function(args, options)
 		table.insert(cmdline, '--language')
 		table.insert(cmdline, value)
 		if options.debug then
-			print(require("silicon.utils").dump(cmdline))
+			print(require("nvim-silicon.utils").dump(cmdline))
 		end
 		ret = vim.fn.system(cmdline, lines)
 		ret = string.gsub(ret, "\n", "")
@@ -165,7 +178,7 @@ M.start = function(args, options)
 		if options.disable_defaults then
 			-- run silicon as is, no supplement of anything
 			if options.debug then
-				print(require("silicon.utils").dump(base_cmdline))
+				print(require("nvim-silicon.utils").dump(base_cmdline))
 			end
 			ret = vim.fn.system(base_cmdline, lines)
 			ret = string.gsub(ret, "\n", "")
@@ -175,7 +188,7 @@ M.start = function(args, options)
 			table.insert(cmdline, '--language')
 			table.insert(cmdline, vim.bo.filetype)
 			if options.debug then
-				print(require("silicon.utils").dump(cmdline))
+				print(require("nvim-silicon.utils").dump(cmdline))
 			end
 			ret = vim.fn.system(cmdline, lines)
 			ret = string.gsub(ret, "\n", "")
@@ -193,7 +206,7 @@ M.start = function(args, options)
 					":e"
 				))
 				if options.debug then
-					print(require("silicon.utils").dump(cmdline))
+					print(require("nvim-silicon.utils").dump(cmdline))
 				end
 				ret = vim.fn.system(cmdline, lines)
 				ret = string.gsub(ret, "\n", "")
