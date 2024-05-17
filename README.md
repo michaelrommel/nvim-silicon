@@ -4,7 +4,7 @@ Plugin to create code images using the external `silicon` tool.
 
 This differs from `silicon.nvim` as that plugin uses a rust binding to call directly into the silicon rust library.
 
-The plugin has been mentioned in a recent YouTube video by "Dreams of Code", titled ["Create beautiful code screenshots in Neovim. Without damaging your wrists."](https://youtu.be/ig_HLrssAYE?si=R2OXs7EgcLZ8dj6r) Thank you, Dreams of Code, for the nice words!
+The plugin has been mentioned in a recent YouTube video by "Dreams of Code", titled ["Create beautiful code screenshots in Neovim. Without damaging your wrists."](https://youtu.be/ig_HLrssAYE?si=R2OXs7EgcLZ8dj6r) Thank you, Elliott, for the kind words!
 
 ## Features
 
@@ -54,7 +54,7 @@ This change hopefully does not break s.b. config but improves the chances of get
 
 `silicon` has the option of using an own config file, usually located at `${HOME}/.config/silicon/config`, but you can find out the location on your system with `silicon --config-file`. There common options can be defined, but the problem is, that command line arguments that `nvim=silicon` supplies and the same arguments in the config file lead to errors.
 
-Now in order to have both worlds, there is now a `disable_defaults` option. This will then only set the command argument. Nothing is added, so if a mandatory option like output destination selection or language is not given either in the config file or the options table, there likely is an error to be expected. So now you can split your arguments between the silicon config file and the neovim lua opts table, depending for instance on how you synchronize your configs across computersC. Note that still conflicting arguments in both locations, like `background` and `background_image` still have to be avoided.
+Now in order to have both worlds, there is now a `disable_defaults` option. This will then only set the command argument. Nothing is added, so if a mandatory option like output destination selection or language is not given either in the config file or the options table, there likely is an error to be expected. So now you can split your arguments between the silicon config file and the neovim lua opts table, depending for instance on how you synchronize your configs across computers. Note that still conflicting arguments in both locations, like `background` and `background_image` still have to be avoided.
 
 Examples:
 
@@ -84,6 +84,49 @@ return opts
 
 will render any file with `javascript` syntax highlighting in a file named `./code.png`.
 
+
+### Integrating with the Windows Subsystem for Linux
+
+There are now two new options `wslclipboard` and `wslclipboardcopy`, which allow to send code images to the Windows clipboard, even though `nvim` runs inside the WSL, and without installing an X server on Windows and `xclip` on linux.
+
+The complete rabbit hole journey of this endeavor deserved it's own [description](./docs/wsl2-clipboard.md)
+
+
+
+### Lua Keybindings
+
+There was the wish to be able to call directly lua functions for triggering the code images. There are now two entry points available
+
+- `.shoot()`: creates a code image with the default settings
+- `.file()`: puts the generated code image onto the clipboard
+- `.clip()`: puts the generated code image onto the clipboard
+
+They can be used with `which-key`, for example, like this:
+
+```lua
+	wk.register({
+		['s'] = { 
+			name = "Silicon",
+			['s']= { function() require("nvim-silicon").shoot() end, "Create code screenshot" },
+			['f']= { function() require("nvim-silicon").file() end, "Create code screenshot as file" },
+			['c']= { function() require("nvim-silicon").clip() end, "Put code screenshot to clipboard" },
+		},
+	}, { prefix = "<leader>", mode = "v" })
+```
+
+Calling the `.shoot()` function behaves normal, just like calling the `:Silicon` vim command would behave, see the explanation of enabling both file and clipboard destinations below.
+
+On the other hand the `.file()` and `.clip()` functions were thought of as additional, overriding functions, that would en-/disable the `--to-clipboard` and en-/disable the `--output` settings, respectively.
+
+
+### Setting multiple destinations
+
+There was a request to have the option to generate an image file but also put the image onto the clipboard. Since the `silicon` command only supports an either/or setting, this means we need two calls to `silicon`. Up to now, the options were 1:1 converted into `silicon` arguments and if you had both `--to-clipboard` and `--output` set, `silicon` would throw an error.
+
+Now the plugin interprets this combination as "I want both!" and calls `silicon` twice, one
+time with the `--output` option and one time with the `--to-clipboard` option. In case the WSL
+integration is used, the `wslclipboardcopy` option steers, whether to keep or delete the
+possibly superfluous file.
 
 
 ## Setup
@@ -143,6 +186,7 @@ The `setup` function accepts the following table (shown with the builtin default
 	-- line_offset = function(args)
 	--     return args.line1
 	-- end,
+
 	-- the distance between lines of code
 	line_pad = 0,
 	-- the rendering of tab characters as so many space characters
@@ -165,6 +209,7 @@ The `setup` function accepts the following table (shown with the builtin default
 	num_separator = nil,
 	-- here a bar glyph is used to draw a vertial line and some space
 	-- num_separator = "\u{258f} ",
+
 	-- whether to put the image onto the clipboard, may produce an error,
 	-- if run on WSL2
 	to_clipboard = false,
@@ -178,6 +223,13 @@ The `setup` function accepts the following table (shown with the builtin default
 	--         ":t"
 	--     )
 	-- end,
+
+    -- how to deal with the clipboard on WSL2
+	-- possible values are: never, always, auto
+    wslclipboard = nil,
+    -- what to do with the temporary screenshot image file when using the Windows
+    -- clipboard from WSL2, possible values are: keep, delete
+	wslclipboardcopy = nil,
 	-- the silicon command, put an absolute location here, if the
 	-- command is not in your ${PATH}
 	command = "silicon",

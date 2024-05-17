@@ -1,0 +1,22 @@
+#! /bin/bash
+
+# we need to get the path to the WSL located file as it would be accessed 
+# by the windows side. wslpath should be a symlink to /init on a standaed WSL2
+# installation
+IMG=$(wslpath -w "$1")
+
+SCRIPT=$(cat << EOF
+Add-Type -AssemblyName System.Drawing
+Add-Type -AssemblyName System.Windows.Forms
+[Windows.Forms.Clipboard]::SetImage(\$([System.Drawing.Image]::Fromfile(\$(Get-Item "${IMG}"))));
+EOF
+)
+
+# The script needs to be encoded in a special format for powershell in order to not 
+# trigger a Shell ExecutionPolicy exception. You need to make sure you have installed
+# iconv and base64
+CMD=$(echo "${SCRIPT}" |iconv -t UTF-16LE |base64 -w0)
+
+# powershell.exe should be on your path, otherwise specify the complete path to the
+# interpreter, like /mnt/c/Windows/system32/WindowsPowerShell/v1.0/powershell.exe
+powershell.exe -Enc "${CMD}"

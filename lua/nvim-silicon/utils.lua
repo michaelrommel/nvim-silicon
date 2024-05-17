@@ -55,4 +55,10 @@ M.dump = function(t)
 	end
 end
 
+M.is_wsl = function()
+	local output = vim.fn.systemlist "uname -r"
+	return not not string.find(output[1] or "", "WSL")
+end
+
+
 return M
