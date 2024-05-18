@@ -53,7 +53,7 @@ The idea is to provide a new configuration option `wslclipboard` that steers, ho
 Several values are available:
 
 - `never`: never try to make special provisions to copy to the Windows clipboard. This essentially means, that the usual linux way used by `silicon` (via `xclip`) is always used. `nil` is regarded as `never`.
-- `always``: unconditionally use the provided mechanism to first create a file based screenshot on linux and then push this image onto the Windows clipboard
+- `always`: unconditionally use the provided mechanism to first create a file based screenshot on linux and then push this image onto the Windows clipboard
 - `auto`: detect that nvim is running under WSL by looking for the string "WSL" in the output of the `uname -r` command, e.g. "5.15.146.1-microsoft-standard-WSL2". If WSL is detected, then use the provided mechanism, otherwise keep the `silicon` standard.
 
 Since we cannot access the Windows clipboard directly, we have to construct an imagefile first. This will be put in the location specified by the `output` opts key. If this is `nil` because you always only wanted the images to be placed on the clipboard or you called the new `.clip()` function, a temporary file will be created in `/tmp/<YYY-MM-DDTHH-MM-SS>_code.png`.
