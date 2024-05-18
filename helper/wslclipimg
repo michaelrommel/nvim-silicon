@@ -12,11 +12,6 @@ Add-Type -AssemblyName System.Windows.Forms
 EOF
 )
 
-# The script needs to be encoded in a special format for powershell in order to not 
-# trigger a Shell ExecutionPolicy exception. You need to make sure you have installed
-# iconv and base64
-CMD=$(echo "${SCRIPT}" |iconv -t UTF-16LE |base64 -w0)
-
 # powershell.exe should be on your path, otherwise specify the complete path to the
 # interpreter, like /mnt/c/Windows/system32/WindowsPowerShell/v1.0/powershell.exe
-powershell.exe -Enc "${CMD}"
+echo "${SCRIPT}" | powershell.exe -NoProfile -NoLogo -InputFormat text -OutputFormat text -NonInteractive -ExecutionPolicy Bypass -Command -

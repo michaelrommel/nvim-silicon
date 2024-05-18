@@ -41,6 +41,10 @@ M.default_opts = {
 	end,
 }
 
+M.get_helper_path = function()
+	return debug.getinfo(2, "S").source:sub(2):match("(.*/).*/.*/") .. "helper/wslclipimg"
+end
+
 M.parse_options = function(opts)
 	local options
 
@@ -239,7 +243,8 @@ M.cmd = function(args, options)
 				elseif string.sub(tostring(M.filename), 1, 2) == "./" then
 					location = vim.fn.getcwd() .. string.sub(tostring(M.filename), 2)
 				else
-					location = vim.fn.getcwd() .. "/" .. M.filename
+					-- location = vim.fn.getcwd() .. "/" .. M.filename
+					location = M.filename
 				end
 				return location
 			end
@@ -276,7 +281,8 @@ M.start = function(args, opts)
 			(opts.wslclipboard == "always") then
 			-- we want to use the WSL integration
 			local cmdline = {}
-			table.insert(cmdline, "/home/rommel/software/nvim-silicon/helper/wslclpimg")
+			table.insert(cmdline, "/bin/bash")
+			table.insert(cmdline, M.helper)
 			if ret and ret.location then
 				-- we have already a file, need to send it to the windows side
 				table.insert(cmdline, ret.location)
@@ -298,6 +304,9 @@ M.start = function(args, opts)
 					return
 				end
 			end
+			if options.debug then
+				print(M.utils.dump(cmdline))
+			end
 			code = vim.fn.system(cmdline)
 			code = string.gsub(code, "\n", "")
 			if code ~= "" then
@@ -308,10 +317,20 @@ M.start = function(args, opts)
 				)
 			else
 				vim.notify(
-					"wslclipimg put the code image onto the clipboard",
+					"wslclipimg put the image at " .. ret.location .. " onto the clipboard",
 					vim.log.levels.INFO,
 					{ title = "nvim-silicon" }
 				)
+			end
+			if opts.wslclipboardcopy == "delete" then
+				local _, err = os.remove(ret.location)
+				if err then
+					vim.notify(
+						"wslclipimg could not delete the tmp file: " .. err,
+						vim.log.levels.WARN,
+						{ title = "nvim-silicon" }
+					)
+				end
 			end
 		else
 			-- we want the standard way of putting an image onto the clipboard
@@ -397,6 +416,11 @@ end
 M.setup = function(opts)
 	-- populate the global options table
 	M.options = M.parse_options(opts)
+	-- find my own path
+	M.helper = M.get_helper_path()
+	if M.options.debug then
+		print("helper is at: " .. M.helper)
+	end
 
 	-- define commands for neovim
 	vim.api.nvim_create_user_command("Silicon", function(args)
