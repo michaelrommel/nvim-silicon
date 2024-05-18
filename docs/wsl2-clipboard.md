@@ -42,13 +42,7 @@ The solution I finally arrived at does also come with inconveniences, albeit hop
 
 ### Prerequisites
 
-You need to have the following packages installed and in your path (linux):
-
-- base64
-- iconv
-- wslpath
-
-The first two are standard commands, that should be in many base installations. The latter one is typically a symlink from `/usr/bin/wslpath` to `/init` in a WSL2 installation.
+You need to have the `wslpath` tool available and in your path. It is by default a symlink from `/usr/bin/wslpath` to `/init` in a WSL2 installation, there should not be a need for any installation.
 
 Also the `powershell.exe` interpreter should be in your path, which is typically taken over from the Windows System Environment Variables setting of your Windows installation (or you would need to adapt the helper script accordingly, see below).
 
@@ -58,17 +52,35 @@ The idea is to provide a new configuration option `wslclipboard` that steers, ho
 
 Several values are available:
 
-- never: never try to make special provisions to copy to the Windows clipboard. This essentially means, that the usual linux way used by `silicon` (via `xclip`) is always used. `nil` is regarded as `never`.
-- always: unconditionally use the provided mechanism to first create a file based screenshot on linux and then push this image onto the Windows clipboard
-- auto: detect that nvim is running under WSL by looking for the string "WSL" in the output of the `uname -r` command, e.g. "5.15.146.1-microsoft-standard-WSL2". If WSL is detected, then use the provided mechanism, otherwise keep the `silicon` standard.
+- `never`: never try to make special provisions to copy to the Windows clipboard. This essentially means, that the usual linux way used by `silicon` (via `xclip`) is always used. `nil` is regarded as `never`.
+- `always``: unconditionally use the provided mechanism to first create a file based screenshot on linux and then push this image onto the Windows clipboard
+- `auto`: detect that nvim is running under WSL by looking for the string "WSL" in the output of the `uname -r` command, e.g. "5.15.146.1-microsoft-standard-WSL2". If WSL is detected, then use the provided mechanism, otherwise keep the `silicon` standard.
 
 Since we cannot access the Windows clipboard directly, we have to construct an imagefile first. This will be put in the location specified by the `output` opts key. If this is `nil` because you always only wanted the images to be placed on the clipboard or you called the new `.clip()` function, a temporary file will be created in `/tmp/<YYY-MM-DDTHH-MM-SS>_code.png`.
 
 There is a second option `wslclipboardcopy` that defines, whether to keep these temporary files or not, the values are `keep` or `delete`. `nil` is regarded as `keep`.
 
-Whenever the Windows clipboard shall be used, first this (temporary) file is created in the usual manner. Then a script `wslclipimg` is called that resides in the `helper` directory of the plugin installation with the filename of that image file as parameter.
+Whenever the Windows clipboard shall be used, first this (temporary) file is created in the usual manner. Then a script `wslclipimg` is called that resides in the `helper` directory of the plugin installation with the filename of that image file as parameter. This linux bash script contains the powershell code needed to read that file and put the contents on the Windows clipboard. The original idea of usine an EncodedCommand was misleading, because of a [bug in Powershell](https://github.com/PowerShell/PowerShell/issues/5912). Now the helper script passes the script as text, explicitly setting the ExecutionPolicy to Bypass. The path to the helper script is determined automatically based on the installation path of the plugin. If that breaks, please turn on `debug` in your config and let me know the output, so that it can be improved.
 
-This linux bash script contains the powershell code needed to read that file and put the contents on the Windows clipboard. The code is UTF-16LE and base64 encoded and given to the `powershell.exe` interpreter, thus avoiding possible policy exceptions.
+```bash
+#! /bin/bash
+
+# we need to get the path to the WSL located file as it would be accessed
+# by the windows side. wslpath should be a symlink to /init on a standaed WSL2
+# installation
+IMG=$(wslpath -w "$1")
+
+SCRIPT=$(cat << EOF
+Add-Type -AssemblyName System.Drawing
+Add-Type -AssemblyName System.Windows.Forms
+[Windows.Forms.Clipboard]::SetImage(\$([System.Drawing.Image]::Fromfile(\$(Get-Item "${IMG}"))));
+EOF
+)
+
+# powershell.exe should be on your path, otherwise specify the complete path to the
+# interpreter, like /mnt/c/Windows/system32/WindowsPowerShell/v1.0/powershell.exe
+echo "${SCRIPT}" | powershell.exe -NoProfile -NoLogo -InputFormat text -OutputFormat text -NonInteractive -ExecutionPolicy Bypass -Command -
+```
 
 If you have suggestions, how this could be even more simplified, please let me know.
 

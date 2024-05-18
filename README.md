@@ -98,20 +98,20 @@ The complete rabbit hole journey of this endeavor deserved it's own [description
 There was the wish to be able to call directly lua functions for triggering the code images. There are now two entry points available
 
 - `.shoot()`: creates a code image with the default settings
-- `.file()`: puts the generated code image onto the clipboard
-- `.clip()`: puts the generated code image onto the clipboard
+- `.file()`: saves the generated code image only into a file
+- `.clip()`: puts the generated code image only onto the clipboard
 
 They can be used with `which-key`, for example, like this:
 
 ```lua
-	wk.register({
-		['s'] = { 
-			name = "Silicon",
-			['s']= { function() require("nvim-silicon").shoot() end, "Create code screenshot" },
-			['f']= { function() require("nvim-silicon").file() end, "Create code screenshot as file" },
-			['c']= { function() require("nvim-silicon").clip() end, "Put code screenshot to clipboard" },
-		},
-	}, { prefix = "<leader>", mode = "v" })
+wk.register({
+	['s'] = {
+		name = "Silicon",
+		['s']= { function() require("nvim-silicon").shoot() end, "Create code screenshot" },
+		['f']= { function() require("nvim-silicon").file() end, "Save code screenshot as file" },
+		['c']= { function() require("nvim-silicon").clip() end, "Copy code screenshot to clipboard" },
+	},
+}, { prefix = "<leader>", mode = "v" })
 ```
 
 Calling the `.shoot()` function behaves normal, just like calling the `:Silicon` vim command would behave, see the explanation of enabling both file and clipboard destinations below.
