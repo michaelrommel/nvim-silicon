@@ -116,7 +116,7 @@ wk.register({
 
 Calling the `.shoot()` function behaves normal, just like calling the `:Silicon` vim command would behave, see the explanation of enabling both file and clipboard destinations below.
 
-On the other hand the `.file()` and `.clip()` functions were thought of as additional, overriding functions, that would en-/disable the `--to-clipboard` and en-/disable the `--output` settings, respectively.
+On the other hand the `.file()` and `.clip()` functions were thought of as additional, overriding functions, that would en-/disable the `--to-clipboard` and en-/disable the `--output` settings, respectively, for this one invocation.
 
 Because here we manipulate the options table, these new functions may not work well with using a `silicon`-config file as described above. We do not know the settings in that file and the overriding mechanisms may cause conflicting command line and config file settings.
 
@@ -137,7 +137,7 @@ With the `lazy.nvim` package manager:
 	"michaelrommel/nvim-silicon",
 	lazy = true,
 	cmd = "Silicon",
-    main = "nvim-silicon",
+	main = "nvim-silicon",
 	config = function()
 		require("nvim-silicon").setup({
 			-- Configuration here, or leave empty to use defaults
@@ -147,7 +147,7 @@ With the `lazy.nvim` package manager:
 },
 ```
 
-**Please note:** When I created this plugin, I haven't been fully aware of the namespaces that all plugins create. So I named the lua directory differently than the plugin name. In order to avoid name clashes with other modules, I have decided to move from `require("silicon)` to `require("nvim-silicon)`. If you use the old name, a deprecation warning will show and when you look at `:messages` you should be able to find the place where the deprecated `require()` statements are and convert them. Most likely in the package manager or a key mappings configuration file.
+**Please note:** When I created this plugin, I hadn't been fully aware of the namespaces that all plugins create. So I named the lua directory differently than the plugin name. In order to avoid name clashes with other modules, I have decided to move from `require("silicon)` to `require("nvim-silicon)`. If you use the old name, a deprecation warning will show and when you look at `:messages` you should be able to find the place where the deprecated `require()` statements are and convert them. Most likely in the package manager or a key mappings configuration file.
 
 The `setup` function accepts the following table (shown with the builtin defaults):
 
@@ -226,11 +226,11 @@ The `setup` function accepts the following table (shown with the builtin default
 	--     )
 	-- end,
 
-    -- how to deal with the clipboard on WSL2
+	-- how to deal with the clipboard on WSL2
 	-- possible values are: never, always, auto
-    wslclipboard = nil,
-    -- what to do with the temporary screenshot image file when using the Windows
-    -- clipboard from WSL2, possible values are: keep, delete
+	wslclipboard = nil,
+	-- what to do with the temporary screenshot image file when using the Windows
+	-- clipboard from WSL2, possible values are: keep, delete
 	wslclipboardcopy = nil,
 	-- the silicon command, put an absolute location here, if the
 	-- command is not in your ${PATH}
