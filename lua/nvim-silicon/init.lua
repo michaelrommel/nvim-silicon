@@ -322,7 +322,7 @@ M.start = function(args, opts)
 					{ title = "nvim-silicon" }
 				)
 			end
-			if opts.wslclipboardcopy == "delete" then
+			if (not opts.output) and (opts.wslclipboardcopy == "delete") then
 				local _, err = os.remove(ret.location)
 				if err then
 					vim.notify(
