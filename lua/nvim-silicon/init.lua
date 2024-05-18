@@ -36,9 +36,7 @@ M.default_opts = {
 	num_separator = nil,
 	wslclipboard = nil,
 	command = "silicon",
-	output = function()
-		return "./" .. os.date("!%Y-%m-%dT%H-%M-%S") .. "_code.png"
-	end,
+	output = nil,
 }
 
 M.get_helper_path = function()
@@ -195,6 +193,7 @@ M.cmd = function(args, options)
 			code = vim.fn.system(cmdline, lines)
 			code = string.gsub(code, "\n", "")
 			ret.code = code
+			print(M.utils.dump(code))
 			if code ~= "" then
 				vim.notify(
 					"silicon call with filetype error: " .. code .. ", trying extension...",
@@ -270,6 +269,19 @@ M.start = function(args, opts)
 		{}
 	)
 
+	if (not opts.output) and (not opts.to_clipboard) and (not opts.disable_defaults) then
+		-- the user has not supplied any valid destination and not disabled defaults
+		-- so add the default output file destination function that we used before
+		if opts.debug then
+			print("setting default output function")
+		end
+		opts.output = true
+		options.output = function()
+			return "./" .. os.date("!%Y-%m-%dT%H-%M-%SZ") .. "_code.png"
+		end
+	end
+
+	-- if wished for, let's create the file first
 	if opts.output then
 		options.to_clipboard = false
 		ret = M.cmd(args, options)
@@ -304,7 +316,7 @@ M.start = function(args, opts)
 					return
 				end
 			end
-			if options.debug then
+			if opts.debug then
 				print(M.utils.dump(cmdline))
 			end
 			code = vim.fn.system(cmdline)
@@ -322,7 +334,9 @@ M.start = function(args, opts)
 					{ title = "nvim-silicon" }
 				)
 			end
+			-- file based outp[ut was not desired, so we created a tmp file
 			if (not opts.output) and (opts.wslclipboardcopy == "delete") then
+				-- we should clean that tmp file now
 				local _, err = os.remove(ret.location)
 				if err then
 					vim.notify(
