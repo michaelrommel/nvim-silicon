@@ -364,9 +364,19 @@ M.shoot = function(opts)
 	-- we get overridden options, if we are called from
 	-- .clip() or .file()
 	if opts then
-		options = opts
+		-- make a deep copy of the original options
+		options = vim.tbl_deep_extend(
+			"force",
+			opts,
+			{}
+		)
 	else
-		options = M.options
+		-- make a deep copy of the original options
+		options = vim.tbl_deep_extend(
+			"force",
+			M.options,
+			{}
+		)
 	end
 
 	local args = nil

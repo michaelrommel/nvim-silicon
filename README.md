@@ -8,7 +8,7 @@ The plugin has been mentioned in a recent YouTube video by "Dreams of Code", tit
 
 ## Features
 
-Right now, the plugin supports most options, that the original `silicon` tool offers. For watermarking an image, you possibly can use a background image with a watermark at the top/bottom edge.
+Right now, the plugin supports most options, that the original `silicon` tool offers. For watermarking an image, you can possibly use a background image with a watermark at the top/bottom edge.
 
 This implementation supports selected line ranges, also highlighting of a line and removing superfluous indents and adding consisten padding or a separator between the numbers and the code. Also now it is possible to configure an output file AND the clipboard as destinations, the code will then call silicon possibly twice. For WSL2 users, a helper script is provided that copies the code screenshot to the Windows clipboard, see explanation below and in the separate document in the `docs` folder.
 
@@ -88,7 +88,7 @@ will render any file with `javascript` syntax highlighting in a file named `./co
 
 ### Integrating with the Windows Subsystem for Linux
 
-There are now two new options `wslclipboard` and `wslclipboardcopy`, which allow to send code images to the Windows clipboard, even though `nvim` runs inside the WSL, and without installing an X server on Windows and `xclip` on linux.
+There are now two new options `wslclipboard` and `wslclipboardcopy`, which allow to send code images to the Windows clipboard, even though `nvim` runs inside the WSL, and without installing an X server on Windows and `xclip` on Linux.
 
 The complete rabbit hole journey of this endeavor deserved it's own [description](./docs/wsl2-clipboard.md)
 
@@ -150,7 +150,7 @@ With the `lazy.nvim` package manager:
 
 **Please note:** When I created this plugin, I hadn't been fully aware of the namespaces that all plugins create. So I named the lua directory differently than the plugin name. In order to avoid name clashes with other modules, I have decided to move from `require("silicon)` to `require("nvim-silicon)`. If you use the old name, a deprecation warning will show and when you look at `:messages` you should be able to find the place where the deprecated `require()` statements are and convert them. Most likely in the package manager or a key mappings configuration file.
 
-The `setup` function accepts the following table (shown with the builtin defaults, I have selected the defaults in a way, that they should work out of the box on most systems, please customize to your preference):
+The `setup` function accepts the following table (shown with the builtin defaults, I have selected the defaults in a way, that they should work out of the box on most systems, please customize to your preference. In particular I removed the default output and font settings in order to enable using only the clipboard and make it work for users, who do not have Victor Mono NerdFont installed):
 
 ```lua
 {
