@@ -12,7 +12,7 @@ M.mandatory_options = {
 -- default options if nothing is provided by the user
 M.default_opts = {
 	debug = false,
-	font = "VictorMono NF=34;Noto Emoji",
+	font = nil,
 	theme = "gruvbox-dark",
 	background = nil,
 	background_image = nil,
@@ -300,7 +300,7 @@ M.start = function(args, opts)
 				table.insert(cmdline, ret.location)
 			else
 				-- we need to create a temporary file
-				options.output = "/tmp/" .. os.date("!%Y-%m-%dT%H-%M-%S") .. "_code.png"
+				options.output = "/tmp/" .. os.date("!%Y-%m-%dT%H-%M-%SZ") .. "_code.png"
 				options.to_clipboard = false
 				ret = M.cmd(args, options)
 				if ret and ret.location then
@@ -407,10 +407,10 @@ M.file = function()
 		{}
 	)
 	options.to_clipboard = false
-	if not options.output then
-		print("You triggered the .file() function, but forgot to set an output path")
-		options.output = "/tmp/" .. os.date("!%Y-%m-%dT%H-%M-%S") .. "_code.png"
-	end
+	-- if not options.output then
+	-- 	print("You triggered the .file() function, but forgot to set an output path")
+	-- 	options.output = "/tmp/" .. os.date("!%Y-%m-%dT%H-%M-%SZ") .. "_code.png"
+	-- end
 	M.shoot(options)
 end
 

@@ -8,9 +8,9 @@ The plugin has been mentioned in a recent YouTube video by "Dreams of Code", tit
 
 ## Features
 
-Right now, the plugin supports most options, that the original `silicon` tool offers. The advanced and nice features that @krivahtoo implemented, like watermarking are missing, but maybe one can use a watermarked background for this. Clipboard support, might not work cross platform, e.g. inside a WSL2 installation, because from there you do not have access to the system clipboard and there may not be an X server running.
+Right now, the plugin supports most options, that the original `silicon` tool offers. For watermarking an image, you possibly can use a background image with a watermark at the top/bottom edge.
 
-This implementation supports selected line ranges, also highlighting of a line and removing superfluous indents and adding consisten padding or a separator between the numbers and the code.
+This implementation supports selected line ranges, also highlighting of a line and removing superfluous indents and adding consisten padding or a separator between the numbers and the code. Also now it is possible to configure an output file AND the clipboard as destinations, the code will then call silicon possibly twice. For WSL2 users, a helper script is provided that copies the code screenshot to the Windows clipboard, see explanation below and in the separate document in the `docs` folder.
 
 Example code image:
 
@@ -52,13 +52,13 @@ This change hopefully does not break s.b. config but improves the chances of get
 
 ### silicon's own config files
 
-`silicon` has the option of using an own config file, usually located at `${HOME}/.config/silicon/config`, but you can find out the location on your system with `silicon --config-file`. There common options can be defined, but the problem is, that command line arguments that `nvim=silicon` supplies and the same arguments in the config file lead to errors.
+`silicon` has the option of using an own config file, usually located at `${HOME}/.config/silicon/config`, but you can find out the location on your system with `silicon --config-file`. There common options can be defined, but the problem is, that command line arguments that `nvim-silicon` supplies and the same arguments in the config file lead to errors.
 
 Now in order to have both worlds, there is now a `disable_defaults` option. This will then only set the command argument. Nothing is added, so if a mandatory option like output destination selection or language is not given either in the config file or the options table, there likely is an error to be expected. So now you can split your arguments between the silicon config file and the neovim lua opts table, depending for instance on how you synchronize your configs across computers. Note that still conflicting arguments in both locations, like `background` and `background_image` still have to be avoided.
 
 Examples:
 
-`~/.config/silicon/config`
+`~/.config/silicon/config`:
 ```text
 --output="./code.png"
 --language="javascript"
@@ -69,7 +69,7 @@ Examples:
 
 with
 
-`nvim-silicon.lua` 
+`nvim-silicon.lua` for the `lazy` package manager:
 ```lua
 -- create code images
 local opts = {
@@ -77,6 +77,7 @@ local opts = {
 	lazy = true,
 	cmd = "Silicon",
 	opts = {
+        disable_defaults = true
 	}
 }
 return opts
@@ -138,18 +139,18 @@ With the `lazy.nvim` package manager:
 	lazy = true,
 	cmd = "Silicon",
 	main = "nvim-silicon",
-	config = function()
-		require("nvim-silicon").setup({
-			-- Configuration here, or leave empty to use defaults
-			font = "VictorMono NF=34;Noto Emoji=34"
-		})
-	end
+	opts = {
+        -- Configuration here, or leave empty to use defaults
+        line_offset = function(args)
+            return args.line1
+        end,
+    }
 },
 ```
 
 **Please note:** When I created this plugin, I hadn't been fully aware of the namespaces that all plugins create. So I named the lua directory differently than the plugin name. In order to avoid name clashes with other modules, I have decided to move from `require("silicon)` to `require("nvim-silicon)`. If you use the old name, a deprecation warning will show and when you look at `:messages` you should be able to find the place where the deprecated `require()` statements are and convert them. Most likely in the package manager or a key mappings configuration file.
 
-The `setup` function accepts the following table (shown with the builtin defaults):
+The `setup` function accepts the following table (shown with the builtin defaults, I have selected the defaults in a way, that they should work out of the box on most systems, please customize to your preference):
 
 ```lua
 {
@@ -164,7 +165,8 @@ The `setup` function accepts the following table (shown with the builtin default
 	debug = false,
 	-- most of them could be overridden with other 
 	-- the font settings with size and fallback font
-	font = "VictorMono NF=34;Noto Emoji",
+	-- Example: font = "VictorMono NF=34;Noto Emoji",
+	font = nil
 	-- the theme to use, depends on themes available to silicon
 	theme = "gruvbox-dark",
 	-- the background color outside the rendered os window
@@ -237,7 +239,7 @@ The `setup` function accepts the following table (shown with the builtin default
 	command = "silicon",
 	-- a string or function that defines the path to the output image
 	output = function()
-		return "./" .. os.date("!%Y-%m-%dT%H-%M-%S") .. "_code.png"
+		return "./" .. os.date("!%Y-%m-%dT%H-%M-%SZ") .. "_code.png"
 	end,
 }
 ```
