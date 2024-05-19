@@ -77,7 +77,7 @@ local opts = {
 	lazy = true,
 	cmd = "Silicon",
 	opts = {
-        disable_defaults = true
+		disable_defaults = true
 	}
 }
 return opts
@@ -140,15 +140,15 @@ With the `lazy.nvim` package manager:
 	cmd = "Silicon",
 	main = "nvim-silicon",
 	opts = {
-        -- Configuration here, or leave empty to use defaults
-        line_offset = function(args)
-            return args.line1
-        end,
+		-- Configuration here, or leave empty to use defaults
+		line_offset = function(args)
+			return args.line1
+		end,
     }
 },
 ```
 
-**Please note:** When I created this plugin, I hadn't been fully aware of the namespaces that all plugins create. So I named the lua directory differently than the plugin name. In order to avoid name clashes with other modules, I have decided to move from `require("silicon)` to `require("nvim-silicon)`. If you use the old name, a deprecation warning will show and when you look at `:messages` you should be able to find the place where the deprecated `require()` statements are and convert them. Most likely in the package manager or a key mappings configuration file.
+**Please note:** When I created this plugin, I hadn't been fully aware of the namespaces that all plugins create. So I named the lua directory differently than the plugin name. In order to avoid name clashes with other modules, I have decided now to move from `require("silicon)` to `require("nvim-silicon)`. If you use the old name, a deprecation warning will show and when you look at `:messages` you should be able to find the place where the deprecated `require()` statements are and convert them. Most likely in the package manager or a key mappings configuration file.
 
 The `setup` function accepts the following table (shown with the builtin defaults, I have selected the defaults in a way, that they should work out of the box on most systems, please customize to your preference. In particular I removed the default output and font settings in order to enable using only the clipboard and make it work for users, who do not have Victor Mono NerdFont installed):
 
@@ -197,9 +197,19 @@ The `setup` function accepts the following table (shown with the builtin default
 	tab_width = 4,
 	-- with which language the syntax highlighting shall be done, should be
 	-- a function that returns either a language name or an extension like "js"
-	language = function()
-		return vim.bo.filetype
-	end,
+	-- it is set to nil, so you can override it, if you do not set it, we try the
+	-- filetype first, and if that fails, the extension
+	language = nil
+	-- language = function()
+	-- 	return vim.bo.filetype
+	-- end,
+	-- language = function()
+	-- 	return vim.fn.fnamemodify(
+	-- 		vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()),
+	-- 		":e"
+	-- 	)
+	-- end,
+
 	-- if the shadow below the os window should have be blurred
 	shadow_blur_radius = 16,
 	-- the offset of the shadow in x and y directions
@@ -238,9 +248,11 @@ The `setup` function accepts the following table (shown with the builtin default
 	-- command is not in your ${PATH}
 	command = "silicon",
 	-- a string or function that defines the path to the output image
-	output = function()
-		return "./" .. os.date("!%Y-%m-%dT%H-%M-%SZ") .. "_code.png"
-	end,
+	output = nil
+	-- here a function is used to create a file in the current directory
+	-- output = function()
+	-- 	return "./" .. os.date("!%Y-%m-%dT%H-%M-%SZ") .. "_code.png"
+	-- end,
 }
 ```
 
