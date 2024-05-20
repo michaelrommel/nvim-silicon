@@ -144,7 +144,7 @@ With the `lazy.nvim` package manager:
 		line_offset = function(args)
 			return args.line1
 		end,
-    }
+	}
 },
 ```
 
