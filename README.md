@@ -148,7 +148,7 @@ With the `lazy.nvim` package manager:
 },
 ```
 
-**Please note:** When I created this plugin, I hadn't been fully aware of the namespaces that all plugins create. So I named the lua directory differently than the plugin name. In order to avoid name clashes with other modules, I have decided now to move from `require("silicon)` to `require("nvim-silicon)`. If you use the old name, a deprecation warning will show and when you look at `:messages` you should be able to find the place where the deprecated `require()` statements are and convert them. Most likely in the package manager or a key mappings configuration file.
+**Please note:** When I created this plugin, I hadn't been fully aware of the namespaces that all plugins create. So I named the lua directory differently than the plugin name. In order to avoid name clashes with other modules, I have decided now to move from `require("silicon)` to `require("nvim-silicon)`. If you use the old name, a small message will be appended to the output of a successful call. (In a future version a deprecation warning will then show and when you look at `:messages` you should be able to find the place where the deprecated `require()` statements are and convert them. Most likely in the package manager or a key mappings configuration file.)
 
 The `setup` function accepts the following table (shown with the builtin defaults, I have selected the defaults in a way, that they should work out of the box on most systems, please customize to your preference. In particular I removed the default output and font settings in order to enable using only the clipboard and make it work for users, who do not have Victor Mono NerdFont installed):
 
