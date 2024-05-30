@@ -226,9 +226,12 @@ M.cmd = function(args, options)
 			{ title = "nvim-silicon" }
 		)
 	else
+		if not M.message then
+			M.message = ""
+		end
 		if options.to_clipboard then
 			vim.notify(
-				"silicon put the image on the clipboard",
+				"silicon put the image on the clipboard." .. M.message,
 				vim.log.levels.INFO,
 				{ title = "nvim-silicon" }
 			)
@@ -249,7 +252,7 @@ M.cmd = function(args, options)
 			end
 			ret.location = get_location()
 			vim.notify(
-				"silicon generated an image at " .. ret.location,
+				"silicon generated an image at " .. ret.location .. "." .. M.message,
 				vim.log.levels.INFO,
 				{ title = "nvim-silicon" }
 			)
