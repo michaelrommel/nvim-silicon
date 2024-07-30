@@ -104,7 +104,7 @@ M.get_arguments = function(args, options)
 	end
 
 	if options.debug then
-		print(M.utils.dump(cmdline))
+		print("get_arguments cmdline: " .. M.utils.dump(cmdline))
 	end
 	return cmdline
 end
@@ -138,7 +138,7 @@ M.format_lines = function(cmdline, args, options)
 	end
 
 	if options.debug then
-		print(M.utils.dump(lines))
+		print("lines to shoot: " .. M.utils.dump(lines))
 	end
 	return lines, cmdline
 end
@@ -166,7 +166,7 @@ M.cmd = function(args, options)
 		table.insert(cmdline, '--language')
 		table.insert(cmdline, ret.language)
 		if options.debug then
-			print(M.utils.dump(cmdline))
+			print("cmd cmdline: " .. M.utils.dump(cmdline))
 		end
 		code = vim.fn.system(cmdline, lines)
 		code = string.gsub(code, "\n", "")
@@ -175,7 +175,7 @@ M.cmd = function(args, options)
 		if options.disable_defaults then
 			-- run silicon as is, no supplement of anything
 			if options.debug then
-				print(M.utils.dump(base_cmdline))
+				print("base_cmdline: " .. M.utils.dump(base_cmdline))
 			end
 			code = vim.fn.system(base_cmdline, lines)
 			code = string.gsub(code, "\n", "")
@@ -188,12 +188,12 @@ M.cmd = function(args, options)
 			table.insert(cmdline, '--language')
 			table.insert(cmdline, ret.language)
 			if options.debug then
-				print(M.utils.dump(cmdline))
+				print("1. lang cmdline: " .. M.utils.dump(cmdline))
 			end
 			code = vim.fn.system(cmdline, lines)
 			code = string.gsub(code, "\n", "")
 			ret.code = code
-			print(M.utils.dump(code))
+			print("returncode: " .. M.utils.dump(code))
 			if code ~= "" then
 				vim.notify(
 					"silicon call with filetype error: " .. code .. ", trying extension...",
@@ -209,7 +209,7 @@ M.cmd = function(args, options)
 				table.insert(cmdline, '--language')
 				table.insert(cmdline, ret.language)
 				if options.debug then
-					print(M.utils.dump(cmdline))
+					print("2. lang cmdline: " .. M.utils.dump(cmdline))
 				end
 				code = vim.fn.system(cmdline, lines)
 				code = string.gsub(code, "\n", "")
@@ -263,8 +263,16 @@ end
 
 M.start = function(args, opts)
 	local options
+	-- stores the error code in case silicon returns something
 	local code
+	-- stores the return value of the call to create a file
 	local ret = nil
+
+	if opts.debug then
+		print("Global options: " .. M.utils.dump(M.options))
+		print("Local options: " .. M.utils.dump(opts))
+	end
+
 	-- make a deep copy of the original options
 	options = vim.tbl_deep_extend(
 		"force",
@@ -278,7 +286,11 @@ M.start = function(args, opts)
 		if opts.debug then
 			print("setting default output function")
 		end
+		-- temporary marker to create a temporary output, note this assignment changes
+		-- the supplied opts table for subsequent calls, so make sure not to submit the
+		-- global options table to the function. Needs a refactor w/r to opts/options
 		opts.output = true
+		-- the actual output destination
 		options.output = function()
 			return "./" .. os.date("!%Y-%m-%dT%H-%M-%SZ") .. "_code.png"
 		end
@@ -320,7 +332,7 @@ M.start = function(args, opts)
 				end
 			end
 			if opts.debug then
-				print(M.utils.dump(cmdline))
+				print("start cmdline: " .. M.utils.dump(cmdline))
 			end
 			code = vim.fn.system(cmdline)
 			code = string.gsub(code, "\n", "")
@@ -338,6 +350,7 @@ M.start = function(args, opts)
 				)
 			end
 			-- file based outp[ut was not desired, so we created a tmp file
+			-- we need to check opts and not options here
 			if (not opts.output) and (opts.wslclipboardcopy == "delete") then
 				-- we should clean that tmp file now
 				local _, err = os.remove(ret.location)
@@ -440,6 +453,17 @@ M.clip = function()
 	M.shoot(options)
 end
 
+M.usercmd = function(args)
+	local options
+	-- make a deep copy of the original options
+	options = vim.tbl_deep_extend(
+		"force",
+		M.options,
+		{}
+	)
+	M.start(args, options)
+end
+
 M.setup = function(opts)
 	-- populate the global options table
 	M.options = M.parse_options(opts)
@@ -451,7 +475,7 @@ M.setup = function(opts)
 
 	-- define commands for neovim
 	vim.api.nvim_create_user_command("Silicon", function(args)
-		M.start(args, M.options)
+		M.usercmd(args)
 	end, {
 		desc = "convert range to code image representation",
 		force = false,
