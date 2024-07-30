@@ -105,14 +105,14 @@ There was the wish to be able to call directly lua functions for triggering the 
 They can be used with `which-key`, for example, like this:
 
 ```lua
-wk.register({
-	['s'] = {
-		name = "Silicon",
-		['s']= { function() require("nvim-silicon").shoot() end, "Create code screenshot" },
-		['f']= { function() require("nvim-silicon").file() end, "Save code screenshot as file" },
-		['c']= { function() require("nvim-silicon").clip() end, "Copy code screenshot to clipboard" },
-	},
-}, { prefix = "<leader>", mode = "v" })
+local wk = require("which-key")
+wk.add({
+    mode = { "v" },
+    { "<leader>s",  group = "Silicon" },
+    { "<leader>sc", function() require("nvim-silicon").clip() end, desc = "Copy code screenshot to clipboard" },
+    { "<leader>sf", function() require("nvim-silicon").file() end,  desc = "Save code screenshot as file" },
+    { "<leader>ss", function() require("nvim-silicon").shoot() end,  desc = "Create code screenshot" },
+})
 ```
 
 Calling the `.shoot()` function behaves normal, just like calling the `:Silicon` vim command would behave, see the explanation of enabling both file and clipboard destinations below.
