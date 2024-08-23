@@ -193,7 +193,9 @@ M.cmd = function(args, options)
 			code = vim.fn.system(cmdline, lines)
 			code = string.gsub(code, "\n", "")
 			ret.code = code
-			print("returncode: " .. M.utils.dump(code))
+			if options.debug then
+				print("returncode: " .. M.utils.dump(code))
+			end
 			if code ~= "" then
 				vim.notify(
 					"silicon call with filetype error: " .. code .. ", trying extension...",
