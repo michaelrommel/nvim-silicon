@@ -310,7 +310,7 @@ M.start = function(args, opts)
 			(opts.wslclipboard == "always") then
 			-- we want to use the WSL integration
 			local cmdline = {}
-			table.insert(cmdline, "/bin/bash")
+			table.insert(cmdline, "/bin/sh")
 			table.insert(cmdline, M.helper)
 			if ret and ret.location then
 				-- we have already a file, need to send it to the windows side

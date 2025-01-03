@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 
 # we need to get the path to the WSL located file as it would be accessed
 # by the windows side. wslpath should be a symlink to /init on a standard WSL2
