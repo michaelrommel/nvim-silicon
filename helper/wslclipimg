@@ -1,11 +1,12 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 # we need to get the path to the WSL located file as it would be accessed
 # by the windows side. wslpath should be a symlink to /init on a standard WSL2
 # installation
 IMG=$(wslpath -w "$1")
 
-SCRIPT=$(cat << EOF
+SCRIPT=$(
+	cat <<EOF
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Windows.Forms
 [Windows.Forms.Clipboard]::SetImage(\$([System.Drawing.Image]::Fromfile(\$(Get-Item "${IMG}"))));

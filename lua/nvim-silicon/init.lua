@@ -304,13 +304,32 @@ M.start = function(args, opts)
 		ret = M.cmd(args, options)
 	end
 
+	local function shell_exists(name)
+		local f = io.open(name, "r")
+		if f ~= nil then
+			io.close(f)
+			return true
+		else
+			return false
+		end
+	end
+
 	if opts.to_clipboard then
 		-- check whether wsl detection shall be done
 		if (opts.wslclipboard == "auto" and M.utils.is_wsl()) or
 			(opts.wslclipboard == "always") then
 			-- we want to use the WSL integration
 			local cmdline = {}
-			table.insert(cmdline, "/bin/sh")
+			-- check which shell to use here
+			if (shell_exists("/bin/bash")) then
+				table.insert(cmdline, "/bin/bash")
+			elseif (shell_exists("/usr/bin/bash")) then
+				table.insert(cmdline, "/usr/bin/bash")
+			elseif (shell_exists("/usr/local/bin/bash")) then
+				table.insert(cmdline, "/usr/local/bin/bash")
+			else
+				table.insert(cmdline, "/bin/sh")
+			end
 			table.insert(cmdline, M.helper)
 			if ret and ret.location then
 				-- we have already a file, need to send it to the windows side

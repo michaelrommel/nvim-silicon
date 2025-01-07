@@ -62,8 +62,8 @@ There is a second option `wslclipboardcopy` that defines, whether to keep these 
 
 Whenever the Windows clipboard shall be used, first this (temporary) file is created in the usual manner. Then a script `wslclipimg` is called that resides in the `helper` directory of the plugin installation with the filename of that image file as parameter. This Linux bash script contains the powershell code needed to read that file and put the contents on the Windows clipboard. The original idea of using an EncodedCommand was misleading, because of a [bug in Powershell](https://github.com/PowerShell/PowerShell/issues/5912). Now the helper script passes the script as text, explicitly setting the ExecutionPolicy to Bypass. The path to the helper script is determined automatically based on the installation path of the plugin. If that breaks, please turn on `debug` in your config and let me know the output, so that it can be improved.
 
-```sh
-#! /bin/sh
+```bash
+#! /usr/bin/env bash
 
 # we need to get the path to the WSL located file as it would be accessed
 # by the windows side. wslpath should be a symlink to /init on a standard WSL2
