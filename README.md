@@ -10,7 +10,7 @@ The plugin has been mentioned in a recent YouTube video by "Dreams of Code", tit
 
 Right now, the plugin supports most options, that the original `silicon` tool offers. For watermarking an image, you can possibly use a background image with a watermark at the top/bottom edge.
 
-This implementation supports selected line ranges, also highlighting of a line and removing superfluous indents and adding consisten padding or a separator between the numbers and the code. Also now it is possible to configure an output file AND the clipboard as destinations, the code will then call silicon possibly twice. For WSL2 users, a helper script is provided that copies the code screenshot to the Windows clipboard, see explanation below and in the separate document in the `docs` folder.
+This implementation supports selected line ranges, also highlighting of a line and removing superfluous indents and adding consistent padding or a separator between the numbers and the code. Also now it is possible to configure an output file AND the clipboard as destinations, the code will then call silicon possibly twice. For WSL2 users, a helper script is provided that copies the code screenshot to the Windows clipboard, see explanation below and in the separate document in the `docs` folder.
 
 Example code image:
 
@@ -33,7 +33,7 @@ You can define either your own solid background colour or provide the path to a 
 
 ### Gobbling and padding
 
-With the `gobble` parameter set to true, the longest common set of leading whitespace in each line is removed, making it easy to share screenshots of code fragments deep down in a nested structure. However, after removing all that whitespace, you now have the opion to insert arbitrary characters between the line number rendered by `silicon` and the code fragment. Since you can use any string, you can - apart from padding blanks - also insert vertical bars etc.
+With the `gobble` parameter set to true, the longest common set of leading whitespace in each line is removed, making it easy to share screenshots of code fragments deep down in a nested structure. However, after removing all that whitespace, you now have the option to insert arbitrary characters between the line number rendered by `silicon` and the code fragment. Since you can use any string, you can - apart from padding blanks - also insert vertical bars etc.
 
 ```lua
     num_separator = "\u{258f} ",
